@@ -1,6 +1,7 @@
 import nextcord as discord
 from nextcord.ext import commands
-import asyncio
+import cv2
+import numpy as np
 import dotenv
 import os
 
@@ -95,6 +96,11 @@ class BuildSnowman(discord.ui.Modal):
 
         if not (self.bottom_radius_value >= self.middle_radius_value >= self.top_radius_value):
             await interaction.send("The radii of your snowballs have to be lesser than or equal to the radius of the snowball beneath them!", ephemeral = True)
+            return
+        
+        if 2*sum([self.bottom_radius_value, self.middle_radius_value, self.top_radius_value]) >= 512:
+            await interaction.send("The sum of the diameters of your snowballs cannot exceed 512", ephemeral = True)
+            return
         
         else:
             snowman_embed = discord.Embed(title = "Your snowman!", colour = discord.Colour.blue())
@@ -104,8 +110,19 @@ class BuildSnowman(discord.ui.Modal):
             snowman_embed.add_field(name = "Arm length", value = self.arm_length_value)
             snowman_embed.add_field(name = "Number of buttons", value = self.num_buttons_value)
             snowman_embed.add_field(name = "Hat colour", value = str(self.rgb))
+            createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1])
             return await interaction.send(embed = snowman_embed, ephemeral = True)
 
+def createImage(rb, rm, rt, al, nb, hc):
+    img = np.zeros((512, 512, 3), np.uint8)
+    img[:,:] = (255, 100, 55)
+    cv2.circle(img, (256, 255-rb), rb, (255, 255, 255), -1)
+    cv2.circle(img, (256, 255-(2*rb+rm)), rm, (255, 255, 255), -1)
+    cv2.circle(img, (256, 255-(2*rb+2*rm+rt)), rt, (255, 255, 255), -1)
+    cv2.imshow("image", img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return
 
 @bot.slash_command(name = "build", description = "Build a snowman")
 async def build(interaction: discord.Interaction, colour: str = discord.SlashOption(name = "colour", description = "Enter the colour of the hat", required = False)):
