@@ -214,13 +214,17 @@ class BuildView(discord.ui.View):
         self.modal_structure = BuildStructure(self)
         self.modal_design = BuildDesign(self)
     
-    @discord.ui.button(label = "⚙ Structure", style = discord.ButtonStyle.blurple)
+    @discord.ui.button(label = "🔨 Structure", style = discord.ButtonStyle.blurple)
     async def structure(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.send_modal(self.modal_structure)
     
     @discord.ui.button(label = "🎨 Design", style = discord.ButtonStyle.blurple)
     async def design(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.send_modal(self.modal_design)
+    
+    @discord.ui.button(label = "✅ Done", style = discord.ButtonStyle.blurple)
+    async def done(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.edit_message(view = None)
 
 def createImage(rb, rm, rt, al, nb, hc, sc, bg):
     img = np.zeros((512, 512, 3), np.uint8)
@@ -250,8 +254,7 @@ def ConvertToRGB(colour: str = "000000"):
 
 @bot.slash_command(name = "build", description = "Build a snowman")
 async def build(interaction: discord.Interaction):
-    
     button_view = BuildView()
-    await interaction.send(view = button_view, ephemeral = True)
+    await interaction.send(view = button_view, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
 
 bot.run(token)
