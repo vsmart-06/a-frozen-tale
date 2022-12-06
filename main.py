@@ -279,6 +279,6 @@ def ConvertToRGB(colour: str = "000000"):
 @bot.slash_command(name = "build", description = "Build a snowman")
 async def build(interaction: discord.Interaction):
     button_view = BuildView()
-    await interaction.send(view = button_view, file = discord.File("./build-a-snowman/snowmen/basic_snowman.png"), ephemeral = True)
+    await interaction.send(view = button_view, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
 
 bot.run(token)
