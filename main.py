@@ -240,13 +240,13 @@ class BuildView(discord.ui.View):
     async def done(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(view = None)
 
-def createImage(rb, rm, rt, al, nb, hc, sc, bg, guild, user):
+def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_length: int, num_buttons: int, hat_colour: tuple, scarf_colour: tuple, bg_colour: tuple, guild_id: int, user: str):
     img = np.zeros((512, 512, 3), np.uint8)
-    img[:,:] = (255, 100, 55)
-    cv2.circle(img, (256, 512-rb), rb, (255, 255, 255), -1)
-    cv2.circle(img, (256, 512-(2*rb+rm)), rm, (255, 255, 255), -1)
-    cv2.circle(img, (256, 512-(2*rb+2*rm+rt)), rt, (255, 255, 255), -1)
-    cv2.imwrite(f"./build-a-snowman/{guild}_{user}.png", img)
+    img[:,:] = bg_colour
+    cv2.circle(img, (256, 512-bottom_radius), bottom_radius, (255, 255, 255), -1)
+    cv2.circle(img, (256, 512-(2*bottom_radius+middle_radius)), middle_radius, (255, 255, 255), -1)
+    cv2.circle(img, (256, 512-(2*bottom_radius+2*middle_radius+top_radius)), top_radius, (255, 255, 255), -1)
+    cv2.imwrite(f"./build-a-snowman/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
     if colour == None:
