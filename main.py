@@ -16,7 +16,7 @@ async def on_ready():
     await bot.change_presence(activity = discord.Game("Do you wanna build a snowman?"))
 
 class BuildStructure(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 25, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (0, 0, 0), bg: tuple = (0, 0, 0)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (0, 0, 0), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -98,7 +98,7 @@ class BuildStructure(discord.ui.Modal):
             self.arm_length_value = abs(int(float(self.arm_length.value)))
         except:
             if not self.arm_length.value and not self.arm_length_value:
-                self.arm_length_value = 25
+                self.arm_length_value = 50
             elif not self.arm_length_value:
                 await interaction.send("The value of the arm length has to be a number", ephemeral = True)
                 return
@@ -132,7 +132,7 @@ class BuildStructure(discord.ui.Modal):
             snowman_embed.add_field(name = "Background colour", value = str(self.bg))
             self.button_view.modal_design.setValues(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value)
             createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user)
-            return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/{interaction.guild_id}_{interaction.user}.png"))
+            return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user}.png"))
     
     def setValues(self, hat_colour, scarf_colour, bg_colour):
         self.rgb = hat_colour
@@ -140,7 +140,7 @@ class BuildStructure(discord.ui.Modal):
         self.bg = bg_colour
 
 class BuildDesign(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 25, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (0, 0, 0), bg: tuple = (0, 0, 0)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (0, 0, 0), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -178,29 +178,32 @@ class BuildDesign(discord.ui.Modal):
 
     async def callback(self, interaction: discord.Interaction):
         
-        self.rgb = ConvertToRGB(self.hat_colour.value)
-        if self.rgb == 0:
-            await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
-            return
-        elif self.rgb == 1:
-            await interaction.send("Invalid hex code", ephemeral = True)
-            return
+        if self.hat_colour.value:
+            self.rgb = ConvertToRGB(self.hat_colour.value)
+            if self.rgb == 0:
+                await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
+                return
+            elif self.rgb == 1:
+                await interaction.send("Invalid hex code", ephemeral = True)
+                return
         
-        self.scarf = ConvertToRGB(self.scarf_colour.value)
-        if self.scarf == 0:
-            await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
-            return
-        elif self.scarf == 1:
-            await interaction.send("Invalid hex code", ephemeral = True)
-            return
+        if self.scarf_colour.value:
+            self.scarf = ConvertToRGB(self.scarf_colour.value)
+            if self.scarf == 0:
+                await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
+                return
+            elif self.scarf == 1:
+                await interaction.send("Invalid hex code", ephemeral = True)
+                return
         
-        self.bg = ConvertToRGB(self.bg_colour.value)
-        if self.bg == 0:
-            await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
-            return
-        elif self.bg == 1:
-            await interaction.send("Invalid hex code", ephemeral = True)
-            return
+        if self.bg_colour.value:
+            self.bg = ConvertToRGB(self.bg_colour.value)
+            if self.bg == 0:
+                await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
+                return
+            elif self.bg == 1:
+                await interaction.send("Invalid hex code", ephemeral = True)
+                return
 
         snowman_embed = discord.Embed(title = "Your snowman!", colour = discord.Colour.blue())
         snowman_embed.add_field(name = "Bottom snowball radius", value = self.bottom_radius_value)
@@ -213,7 +216,7 @@ class BuildDesign(discord.ui.Modal):
         snowman_embed.add_field(name = "Background colour", value = str(self.bg))
         self.button_view.modal_structure.setValues(self.rgb, self.scarf, self.bg)
         createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user)
-        return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/{interaction.guild_id}_{interaction.user}.png"))
+        return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user}.png"))
     
     def setValues(self, bottom_radius, middle_radius, top_radius, arm_length, num_buttons):
         self.bottom_radius_value = bottom_radius
@@ -246,7 +249,13 @@ def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_len
     cv2.circle(img, (256, 512-bottom_radius), bottom_radius, (255, 255, 255), -1)
     cv2.circle(img, (256, 512-(2*bottom_radius+middle_radius)), middle_radius, (255, 255, 255), -1)
     cv2.circle(img, (256, 512-(2*bottom_radius+2*middle_radius+top_radius)), top_radius, (255, 255, 255), -1)
-    cv2.imwrite(f"./build-a-snowman/{guild_id}_{user}.png", img)
+    arm_right_start = ((256+middle_radius), (512-(2*bottom_radius+middle_radius)))
+    arm_right_end = (int(256+middle_radius+(arm_length)//1.4), int(512-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
+    arm_left_start = ((256-middle_radius), (512-(2*bottom_radius+middle_radius)))
+    arm_left_end = (int(256-middle_radius-(arm_length)//1.4), int(512-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
+    cv2.line(img, arm_right_start, arm_right_end, (0, 75, 150), 3)
+    cv2.line(img, arm_left_start, arm_left_end, (0, 75, 150), 3)
+    cv2.imwrite(f"./build-a-snowman/snowmen/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
     if colour == None:
@@ -270,6 +279,6 @@ def ConvertToRGB(colour: str = "000000"):
 @bot.slash_command(name = "build", description = "Build a snowman")
 async def build(interaction: discord.Interaction):
     button_view = BuildView()
-    await interaction.send(view = button_view, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
+    await interaction.send(view = button_view, file = discord.File("./build-a-snowman/snowmen/basic_snowman.png"), ephemeral = True)
 
 bot.run(token)
