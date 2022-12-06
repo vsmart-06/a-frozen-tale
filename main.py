@@ -16,7 +16,7 @@ async def on_ready():
     await bot.change_presence(activity = discord.Game("Do you wanna build a snowman?"))
 
 class BuildStructure(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (0, 0, 0), bg: tuple = (55, 100, 255)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (255, 0, 0), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -131,8 +131,8 @@ class BuildStructure(discord.ui.Modal):
             snowman_embed.add_field(name = "Scarf colour", value = str(self.scarf))
             snowman_embed.add_field(name = "Background colour", value = str(self.bg))
             self.button_view.modal_design.setValues(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value)
-            createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user)
-            return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user}.png"))
+            createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
+            return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
     def setValues(self, hat_colour, scarf_colour, bg_colour):
         self.rgb = hat_colour
@@ -140,7 +140,7 @@ class BuildStructure(discord.ui.Modal):
         self.bg = bg_colour
 
 class BuildDesign(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (0, 0, 0), bg: tuple = (55, 100, 255)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (255, 0, 0), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -215,8 +215,8 @@ class BuildDesign(discord.ui.Modal):
         snowman_embed.add_field(name = "Scarf colour", value = str(self.scarf))
         snowman_embed.add_field(name = "Background colour", value = str(self.bg))
         self.button_view.modal_structure.setValues(self.rgb, self.scarf, self.bg)
-        createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user)
-        return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user}.png"))
+        createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
+        return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
     def setValues(self, bottom_radius, middle_radius, top_radius, arm_length, num_buttons):
         self.bottom_radius_value = bottom_radius
@@ -231,7 +231,7 @@ class BuildView(discord.ui.View):
         self.modal_structure = BuildStructure(self)
         self.modal_design = BuildDesign(self)
     
-    @discord.ui.button(label = "🔨 Structure", style = discord.ButtonStyle.blurple)
+    @discord.ui.button(label = "🔨 Build", style = discord.ButtonStyle.blurple)
     async def structure(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.send_modal(self.modal_structure)
     
