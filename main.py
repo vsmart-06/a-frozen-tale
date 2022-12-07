@@ -310,14 +310,18 @@ def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_len
     cv2.rectangle(img, hat_top_start, hat_top_end, hat_colour, -1)
     cv2.line(img, (side//2-middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius)), (side//2+middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius)), hat_colour_secondary, 3)
     scarf_points = []
-    for x in range(-top_radius//2, top_radius//2 + 1, top_radius//7):
+    for x in range(-top_radius//2, (top_radius//2) + 1, top_radius//7):
         y_coord = int((top_radius**2 - x**2)**(0.5))
         point = (side//2 + x, (side-(2*bottom_radius+2*middle_radius+top_radius))+y_coord)
-        scarf_points.append(point)
-    for point in scarf_points:
         cv2.circle(img, point, top_radius//5, scarf_colour, -1)
         cv2.circle(img, point, top_radius//10, scarf_colour_secondary, -1)
     cv2.circle(img, (side//2, side-(2*bottom_radius+2*middle_radius+top_radius)), top_radius//10, (0, 165, 255), -1)
+    cv2.circle(img, (side//2+top_radius//4, side-(2*bottom_radius+2*middle_radius+top_radius)-top_radius//3), top_radius//10, (0, 0, 0), -1)
+    cv2.circle(img, (side//2-top_radius//4, side-(2*bottom_radius+2*middle_radius+top_radius)-top_radius//3), top_radius//10, (0, 0, 0), -1)
+    for x in range(-top_radius//3, (top_radius//3) + 1, top_radius//6):
+        y_coord = int(((int(top_radius*0.5))**2 - x**2)**(0.5))
+        point = (side//2 + x, (side-(2*bottom_radius+2*middle_radius+top_radius))+y_coord)
+        cv2.circle(img, point, top_radius//10, (0, 0, 0), -1)
     cv2.imwrite(f"./build-a-snowman/snowmen/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
