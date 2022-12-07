@@ -16,7 +16,7 @@ async def on_ready():
     await bot.change_presence(activity = discord.Game("Do you wanna build a snowman?"))
 
 class BuildStructure(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (255, 0, 0), bg: tuple = (55, 100, 255)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 100, middle_radius: int = 75, top_radius: int = 56, arm_length: int = 100, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -25,7 +25,9 @@ class BuildStructure(discord.ui.Modal):
         self.arm_length_value = arm_length
         self.num_buttons_value = num_buttons
         self.rgb = rgb
+        self.rgb_sec = rgb_sec
         self.scarf = scarf
+        self.scarf_sec = scarf_sec
         self.bg = bg
 
         self.bottom_radius = discord.ui.TextInput(
@@ -73,7 +75,7 @@ class BuildStructure(discord.ui.Modal):
             self.bottom_radius_value = abs(int(float(self.bottom_radius.value)))
         except:
             if not self.bottom_radius.value and not self.bottom_radius_value:
-                self.bottom_radius_value = 50
+                self.bottom_radius_value = 100
             elif not self.bottom_radius_value:
                 await interaction.send("The values of the radii have to be numbers!", ephemeral = True)
                 return
@@ -98,7 +100,7 @@ class BuildStructure(discord.ui.Modal):
             self.arm_length_value = abs(int(float(self.arm_length.value)))
         except:
             if not self.arm_length.value and not self.arm_length_value:
-                self.arm_length_value = 50
+                self.arm_length_value = 100
             elif not self.arm_length_value:
                 await interaction.send("The value of the arm length has to be a number", ephemeral = True)
                 return
@@ -127,20 +129,25 @@ class BuildStructure(discord.ui.Modal):
             snowman_embed.add_field(name = "Top snowball radius", value = self.top_radius_value)
             snowman_embed.add_field(name = "Arm length", value = self.arm_length_value)
             snowman_embed.add_field(name = "Number of buttons", value = self.num_buttons_value)
-            snowman_embed.add_field(name = "Hat colour", value = str(self.rgb))
-            snowman_embed.add_field(name = "Scarf colour", value = str(self.scarf))
+            snowman_embed.add_field(name = "Primary hat colour", value = str(self.rgb))
+            snowman_embed.add_field(name = "Secondary hat colour", value = str(self.rgb_sec))
+            snowman_embed.add_field(name = "Primary scarf colour", value = str(self.scarf))
+            snowman_embed.add_field(name = "Secondary scarf colour", value = str(self.scarf_sec))
             snowman_embed.add_field(name = "Background colour", value = str(self.bg))
+            snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
             self.button_view.modal_design.setValues(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value)
-            createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
+            createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.rgb_sec[::-1], self.scarf[::-1], self.scarf_sec[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
             return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
-    def setValues(self, hat_colour, scarf_colour, bg_colour):
+    def setValues(self, hat_colour, hat_colour_secondary, scarf_colour, scarf_colour_secondary, bg_colour):
         self.rgb = hat_colour
+        self.rgb_sec = hat_colour_secondary
         self.scarf = scarf_colour
+        self.scarf_sec = scarf_colour_secondary
         self.bg = bg_colour
 
 class BuildDesign(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 50, middle_radius: int = 37, top_radius: int = 28, arm_length: int = 50, num_buttons: int = 3, rgb: tuple = (0, 0, 0), scarf: tuple = (255, 0, 0), bg: tuple = (55, 100, 255)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 100, middle_radius: int = 75, top_radius: int = 56, arm_length: int = 100, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -149,24 +156,42 @@ class BuildDesign(discord.ui.Modal):
         self.arm_length_value = arm_length
         self.num_buttons_value = num_buttons
         self.rgb = rgb
+        self.rgb_sec = rgb_sec
         self.scarf = scarf
+        self.scarf_sec = scarf_sec
         self.bg = bg
 
         self.hat_colour = discord.ui.TextInput(
-            label = "Colour of the hat",
+            label = "Primary colour of the hat",
             style = discord.TextInputStyle.short,
-            placeholder = "Enter the hex code for the colour of the hat (Ex: 000000 for black)",
+            placeholder = "Enter the hex code for the primary colour of the hat (Ex: 000000 for black)",
             required = False
         )
         self.add_item(self.hat_colour)
 
-        self.scarf_colour = discord.ui.TextInput(
-            label = "Colour of the scarf",
+        self.hat_colour_secondary = discord.ui.TextInput(
+            label = "Secondary colour of the hat",
             style = discord.TextInputStyle.short,
-            placeholder = "Enter the hex code for the colour of the scarf (Ex: 000000 for black)",
+            placeholder = "Enter the hex code for the secondary colour of the hat (Ex: 000000 for black)",
+            required = False
+        )
+        self.add_item(self.hat_colour_secondary)
+
+        self.scarf_colour = discord.ui.TextInput(
+            label = "Primary colour of the scarf",
+            style = discord.TextInputStyle.short,
+            placeholder = "Enter the hex code for the primary colour of the scarf (Ex: 000000 for black)",
             required = False
         )
         self.add_item(self.scarf_colour)
+
+        self.scarf_colour_secondary = discord.ui.TextInput(
+            label = "Secondary colour of the scarf",
+            style = discord.TextInputStyle.short,
+            placeholder = "Enter the hex code for the secondary colour of the scarf (Ex: 000000 for black)",
+            required = False
+        )
+        self.add_item(self.scarf_colour_secondary)
 
         self.bg_colour = discord.ui.TextInput(
             label = "Colour of the background",
@@ -187,12 +212,30 @@ class BuildDesign(discord.ui.Modal):
                 await interaction.send("Invalid hex code", ephemeral = True)
                 return
         
+        if self.hat_colour_secondary.value:
+            self.rgb_sec = ConvertToRGB(self.hat_colour_secondary.value)
+            if self.rgb_sec == 0:
+                await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
+                return
+            elif self.rgb_sec == 1:
+                await interaction.send("Invalid hex code", ephemeral = True)
+                return
+        
         if self.scarf_colour.value:
             self.scarf = ConvertToRGB(self.scarf_colour.value)
             if self.scarf == 0:
                 await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
                 return
             elif self.scarf == 1:
+                await interaction.send("Invalid hex code", ephemeral = True)
+                return
+        
+        if self.scarf_colour_secondary.value:
+            self.scarf_sec = ConvertToRGB(self.scarf_colour_secondary.value)
+            if self.scarf_sec == 0:
+                await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
+                return
+            elif self.scarf_sec == 1:
                 await interaction.send("Invalid hex code", ephemeral = True)
                 return
         
@@ -211,11 +254,14 @@ class BuildDesign(discord.ui.Modal):
         snowman_embed.add_field(name = "Top snowball radius", value = self.top_radius_value)
         snowman_embed.add_field(name = "Arm length", value = self.arm_length_value)
         snowman_embed.add_field(name = "Number of buttons", value = self.num_buttons_value)
-        snowman_embed.add_field(name = "Hat colour", value = str(self.rgb))
-        snowman_embed.add_field(name = "Scarf colour", value = str(self.scarf))
+        snowman_embed.add_field(name = "Primary hat colour", value = str(self.rgb))
+        snowman_embed.add_field(name = "Secondary hat colour", value = str(self.rgb_sec))
+        snowman_embed.add_field(name = "Primary scarf colour", value = str(self.scarf))
+        snowman_embed.add_field(name = "Secondary scarf colour", value = str(self.scarf_sec))
         snowman_embed.add_field(name = "Background colour", value = str(self.bg))
-        self.button_view.modal_structure.setValues(self.rgb, self.scarf, self.bg)
-        createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.scarf[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
+        snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
+        self.button_view.modal_structure.setValues(self.rgb, self.rgb_sec, self.scarf, self.scarf_sec, self.bg)
+        createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.rgb_sec[::-1], self.scarf[::-1], self.scarf_sec[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
         return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
     def setValues(self, bottom_radius, middle_radius, top_radius, arm_length, num_buttons):
@@ -243,7 +289,7 @@ class BuildView(discord.ui.View):
     async def done(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(view = None)
 
-def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_length: int, num_buttons: int, hat_colour: tuple, scarf_colour: tuple, bg_colour: tuple, guild_id: int, user: str):
+def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_length: int, num_buttons: int, hat_colour: tuple, hat_colour_secondary: tuple, scarf_colour: tuple, scarf_colour_secondary: tuple, bg_colour: tuple, guild_id: int, user: str):
     side = 1024
     img = np.zeros((side, side, 3), np.uint8)
     img[:,:] = bg_colour
@@ -262,6 +308,7 @@ def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_len
     hat_top_end = (side//2+middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius))
     cv2.rectangle(img, hat_bottom_start, hat_bottom_end, hat_colour, -1)
     cv2.rectangle(img, hat_top_start, hat_top_end, hat_colour, -1)
+    cv2.line(img, (side//2-middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius)), (side//2+middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius)), hat_colour_secondary, 3)
     cv2.imwrite(f"./build-a-snowman/snowmen/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
@@ -286,6 +333,18 @@ def ConvertToRGB(colour: str = "000000"):
 @bot.slash_command(name = "build", description = "Build a snowman")
 async def build(interaction: discord.Interaction):
     button_view = BuildView()
-    await interaction.send(view = button_view, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
+    snowman_embed = discord.Embed(title = "Your snowman!", colour = discord.Colour.blue())
+    snowman_embed.add_field(name = "Bottom snowball radius", value = 100)
+    snowman_embed.add_field(name = "Middle snowball radius", value = 75)
+    snowman_embed.add_field(name = "Top snowball radius", value = 56)
+    snowman_embed.add_field(name = "Arm length", value = 100)
+    snowman_embed.add_field(name = "Number of buttons", value = 3)
+    snowman_embed.add_field(name = "Primary hat colour", value = (0, 0, 0))
+    snowman_embed.add_field(name = "Secondary hat colour", value = (255, 0, 0))
+    snowman_embed.add_field(name = "Primary scarf colour", value = (255, 0, 0))
+    snowman_embed.add_field(name = "Secondary scarf colour", value = (0, 0, 255))
+    snowman_embed.add_field(name = "Background colour", value = (55, 100, 255))
+    snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
+    await interaction.send(view = button_view, embed = snowman_embed, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
 
 bot.run(token)
