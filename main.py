@@ -73,6 +73,12 @@ class BuildStructure(discord.ui.Modal):
     async def callback(self, interaction: discord.Interaction):
         try:
             self.bottom_radius_value = abs(int(float(self.bottom_radius.value)))
+            if self.bottom_radius_value < 50:
+                await interaction.send("The bottom snowball radius is too small!", ephemeral = True)
+                return
+            elif self.bottom_radius_value > 256:
+                await interaction.send("The bottom snowball radius is too big!", ephemeral = True)
+                return
         except:
             if not self.bottom_radius.value and not self.bottom_radius_value:
                 self.bottom_radius_value = 150
@@ -81,6 +87,9 @@ class BuildStructure(discord.ui.Modal):
                 return
         try:
             self.middle_radius_value = abs(int(float(self.middle_radius.value)))
+            if self.middle_radius_value < 50:
+                await interaction.send("The middle snowball radius is too small!", ephemeral = True)
+                return
         except:
             if not self.middle_radius.value and not self.middle_radius_value:
                 self.middle_radius_value = int(0.75*self.bottom_radius_value)
@@ -89,6 +98,9 @@ class BuildStructure(discord.ui.Modal):
                 return
         try:
             self.top_radius_value = abs(int(float(self.top_radius.value)))
+            if self.top_radius_value < 50:
+                await interaction.send("The top snowball radius is too small!", ephemeral = True)
+                return
         except:
             if not self.top_radius.value and not self.top_radius_value:
                 self.top_radius_value = int(0.75*self.middle_radius_value)
@@ -107,6 +119,8 @@ class BuildStructure(discord.ui.Modal):
         
         try:
             self.num_buttons_value = abs(int(self.num_buttons.value))
+            if self.num_buttons > 5:
+                await interaction.send("You can only have a maximum of 5 buttons", ephemeral = True)
         except:
             if not self.num_buttons.value and not self.num_buttons_value:
                 self.num_buttons_value = 3
@@ -118,8 +132,8 @@ class BuildStructure(discord.ui.Modal):
             await interaction.send("The radii of your snowballs have to be lesser than or equal to the radius of the snowball beneath them!", ephemeral = True)
             return
         
-        if 2*sum([self.bottom_radius_value, self.middle_radius_value, self.top_radius_value]) >= 1024:
-            await interaction.send("The sum of the diameters of your snowballs cannot exceed 1024", ephemeral = True)
+        if 2*sum([self.bottom_radius_value, self.middle_radius_value, self.top_radius_value]) >= 950:
+            await interaction.send("The sum of the diameters of your snowballs cannot exceed 950", ephemeral = True)
             return
         
         else:
