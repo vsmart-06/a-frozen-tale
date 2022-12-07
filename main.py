@@ -116,8 +116,8 @@ class BuildStructure(discord.ui.Modal):
             await interaction.send("The radii of your snowballs have to be lesser than or equal to the radius of the snowball beneath them!", ephemeral = True)
             return
         
-        if 2*sum([self.bottom_radius_value, self.middle_radius_value, self.top_radius_value]) >= 512:
-            await interaction.send("The sum of the diameters of your snowballs cannot exceed 512", ephemeral = True)
+        if 2*sum([self.bottom_radius_value, self.middle_radius_value, self.top_radius_value]) >= 1024:
+            await interaction.send("The sum of the diameters of your snowballs cannot exceed 1024", ephemeral = True)
             return
         
         else:
@@ -244,17 +244,24 @@ class BuildView(discord.ui.View):
         await interaction.response.edit_message(view = None)
 
 def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_length: int, num_buttons: int, hat_colour: tuple, scarf_colour: tuple, bg_colour: tuple, guild_id: int, user: str):
-    img = np.zeros((512, 512, 3), np.uint8)
+    side = 1024
+    img = np.zeros((side, side, 3), np.uint8)
     img[:,:] = bg_colour
-    cv2.circle(img, (256, 512-bottom_radius), bottom_radius, (255, 255, 255), -1)
-    cv2.circle(img, (256, 512-(2*bottom_radius+middle_radius)), middle_radius, (255, 255, 255), -1)
-    cv2.circle(img, (256, 512-(2*bottom_radius+2*middle_radius+top_radius)), top_radius, (255, 255, 255), -1)
-    arm_right_start = ((256+middle_radius), (512-(2*bottom_radius+middle_radius)))
-    arm_right_end = (int(256+middle_radius+(arm_length)//1.4), int(512-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
-    arm_left_start = ((256-middle_radius), (512-(2*bottom_radius+middle_radius)))
-    arm_left_end = (int(256-middle_radius-(arm_length)//1.4), int(512-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
+    cv2.circle(img, (side//2, side-bottom_radius), bottom_radius, (255, 255, 255), -1)
+    cv2.circle(img, (side//2, side-(2*bottom_radius+middle_radius)), middle_radius, (255, 255, 255), -1)
+    cv2.circle(img, (side//2, side-(2*bottom_radius+2*middle_radius+top_radius)), top_radius, (255, 255, 255), -1)
+    arm_right_start = ((side//2+middle_radius), (side-(2*bottom_radius+middle_radius)))
+    arm_right_end = (int(side//2+middle_radius+(arm_length)//1.4), int(side-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
+    arm_left_start = ((side//2-middle_radius), (side-(2*bottom_radius+middle_radius)))
+    arm_left_end = (int(side//2-middle_radius-(arm_length)//1.4), int(side-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
     cv2.line(img, arm_right_start, arm_right_end, (0, 75, 150), 3)
     cv2.line(img, arm_left_start, arm_left_end, (0, 75, 150), 3)
+    hat_bottom_start = (side//2-middle_radius, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius))
+    hat_bottom_end = (side//2+middle_radius, side-(2*bottom_radius+2*middle_radius+2*top_radius))
+    hat_top_start = (side//2-middle_radius//2, side-(2*bottom_radius+2*middle_radius+4*top_radius))
+    hat_top_end = (side//2+middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius))
+    cv2.rectangle(img, hat_bottom_start, hat_bottom_end, hat_colour, -1)
+    cv2.rectangle(img, hat_top_start, hat_top_end, hat_colour, -1)
     cv2.imwrite(f"./build-a-snowman/snowmen/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
