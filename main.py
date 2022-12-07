@@ -16,7 +16,7 @@ async def on_ready():
     await bot.change_presence(activity = discord.Game("Do you wanna build a snowman?"))
 
 class BuildStructure(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 100, middle_radius: int = 75, top_radius: int = 56, arm_length: int = 100, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 150, middle_radius: int = 112, top_radius: int = 84, arm_length: int = 125, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -75,7 +75,7 @@ class BuildStructure(discord.ui.Modal):
             self.bottom_radius_value = abs(int(float(self.bottom_radius.value)))
         except:
             if not self.bottom_radius.value and not self.bottom_radius_value:
-                self.bottom_radius_value = 100
+                self.bottom_radius_value = 150
             elif not self.bottom_radius_value:
                 await interaction.send("The values of the radii have to be numbers!", ephemeral = True)
                 return
@@ -100,7 +100,7 @@ class BuildStructure(discord.ui.Modal):
             self.arm_length_value = abs(int(float(self.arm_length.value)))
         except:
             if not self.arm_length.value and not self.arm_length_value:
-                self.arm_length_value = 100
+                self.arm_length_value = 125
             elif not self.arm_length_value:
                 await interaction.send("The value of the arm length has to be a number", ephemeral = True)
                 return
@@ -147,7 +147,7 @@ class BuildStructure(discord.ui.Modal):
         self.bg = bg_colour
 
 class BuildDesign(discord.ui.Modal):
-    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 100, middle_radius: int = 75, top_radius: int = 56, arm_length: int = 100, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
+    def __init__(self, button_view: discord.ui.View, bottom_radius: int = 150, middle_radius: int = 112, top_radius: int = 84, arm_length: int = 125, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
         super().__init__("Build a snowman!", timeout = None)
         self.button_view = button_view
         self.bottom_radius_value = bottom_radius
@@ -309,6 +309,15 @@ def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_len
     cv2.rectangle(img, hat_bottom_start, hat_bottom_end, hat_colour, -1)
     cv2.rectangle(img, hat_top_start, hat_top_end, hat_colour, -1)
     cv2.line(img, (side//2-middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius)), (side//2+middle_radius//2, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius)), hat_colour_secondary, 3)
+    scarf_points = []
+    for x in range(-top_radius//2, top_radius//2 + 1, top_radius//7):
+        y_coord = int((top_radius**2 - x**2)**(0.5))
+        point = (side//2 + x, (side-(2*bottom_radius+2*middle_radius+top_radius))+y_coord)
+        scarf_points.append(point)
+    for point in scarf_points:
+        cv2.circle(img, point, top_radius//5, scarf_colour, -1)
+        cv2.circle(img, point, top_radius//10, scarf_colour_secondary, -1)
+    cv2.circle(img, (side//2, side-(2*bottom_radius+2*middle_radius+top_radius)), top_radius//10, (0, 165, 255), -1)
     cv2.imwrite(f"./build-a-snowman/snowmen/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
@@ -334,10 +343,10 @@ def ConvertToRGB(colour: str = "000000"):
 async def build(interaction: discord.Interaction):
     button_view = BuildView()
     snowman_embed = discord.Embed(title = "Your snowman!", colour = discord.Colour.blue())
-    snowman_embed.add_field(name = "Bottom snowball radius", value = 100)
-    snowman_embed.add_field(name = "Middle snowball radius", value = 75)
-    snowman_embed.add_field(name = "Top snowball radius", value = 56)
-    snowman_embed.add_field(name = "Arm length", value = 100)
+    snowman_embed.add_field(name = "Bottom snowball radius", value = 150)
+    snowman_embed.add_field(name = "Middle snowball radius", value = 112)
+    snowman_embed.add_field(name = "Top snowball radius", value = 84)
+    snowman_embed.add_field(name = "Arm length", value = 125)
     snowman_embed.add_field(name = "Number of buttons", value = 3)
     snowman_embed.add_field(name = "Primary hat colour", value = (0, 0, 0))
     snowman_embed.add_field(name = "Secondary hat colour", value = (255, 0, 0))
