@@ -434,7 +434,20 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
                     snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                     await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
             else:
-                await interaction.send(f"{user.mention} has recently been hit by a snowball! Try again <t:{snowball_data[interaction.guild_id][user.id]['lastHit']+30}:R>", ephemeral = True)
+                if int(str(time.time()).split(".")[0]) - snowball_data[interaction.guild_id][user.id]["lastHit"] >= 30:
+                    snowball_data[interaction.guild_id][user.id]['lastHit'] = None
+                    shot = rd.choice(probability)
+                    if shot:
+                        snowball_data[interaction.guild_id][user.id]["lastHit"] = int(str(time.time()).split(".")[0])
+                        snowball_data[interaction.guild_id][user.id]["snowballs"] = 0
+                        snowball_data[interaction.guild_id][user.id]["lastLoad"] = None
+                        snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
+                        await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {user.mention} with a snowball!")
+                    else:
+                        snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
+                        await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
+                else:
+                    await interaction.send(f"{user.mention} has recently been hit by a snowball! Try again <t:{snowball_data[interaction.guild_id][user.id]['lastHit']+30}:R>", ephemeral = True)
         else:
             await interaction.send("You do not have any snowballs to throw! Load some with </snowball load:1050412204312252486>", ephemeral = True)
     except:
