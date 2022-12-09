@@ -415,14 +415,18 @@ async def snowball_load(interaction: discord.Interaction):
             snowball_data[interaction.guild_id] = {}
         snowball_data[interaction.guild_id][interaction.user.id] = {"snowballs": 1, "lastLoad": int(str(time.time()).split(".")[0]), "lastHit": None}
         await interaction.send(f"Snowball loaded! You now have **{snowball_data[interaction.guild_id][interaction.user.id]['snowballs']}** snowballs!", ephemeral = True)
+    print("Load: "+str(snowball_data))
 
 @snowball.subcommand(name = "throw", description = "Throw a snowball")
 async def snowball_throw(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user you want to throw the snowball at", required = True)):
     global snowball_data
     probability = [True, True, True, True, False, False, False, False, False, False]
+    if user.bot:
+        await interaction.send("You can't throw a snowball at a bot!", ephemeral = True)
+        return
     try:
         if snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] > 0:
-            if not snowball_data[interaction.guild_id][interaction.user.id]["lastHit"]:
+            if not snowball_data[interaction.guild_id][user.id]["lastHit"]:
                 shot = rd.choice(probability)
                 if shot:
                     snowball_data[interaction.guild_id][user.id]["lastHit"] = int(str(time.time()).split(".")[0])
@@ -456,7 +460,7 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
         if interaction.user.id not in list(snowball_data[interaction.guild_id].keys()):
             await interaction.send("You do not have any snowballs to throw! Load some with </snowball load:1050412204312252486>", ephemeral = True)
         else:
-            snowball_data[interaction.guild_id][user.id] = {"snowballs": 0, "lastHit": None}
+            snowball_data[interaction.guild_id][user.id] = {"snowballs": 0, "lastLoad": None, "lastHit": None}
             shot = rd.choice(probability)
             if shot:
                 snowball_data[interaction.guild_id][user.id]["lastHit"] = int(str(time.time()).split(".")[0])
@@ -467,5 +471,6 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
             else:
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                 await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
+    print("Throw: "+str(snowball_data))
 
 bot.run(token)
