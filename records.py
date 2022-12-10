@@ -25,7 +25,7 @@ try:
         user_id BIGINT NOT NULL,
         hits BIGINT NOT NULL,
         misses BIGINT NOT NULL,
-        knock_outs BIGINT NOT NULL,
+        knock_outs BIGINT NOT NULL
         )''')
     conn.commit()
 
@@ -42,7 +42,7 @@ def change_stats(guild_id, user_id, status):
     c = conn.cursor()
     try:
         c.execute(f"SELECT * FROM snowball_leaderboards WHERE guild_id = {guild_id} AND user_id = {user_id}")
-        data = c.fetchone()[1:]
+        data = list(c.fetchone()[1:])
     except:
         stats = [0, 0, 0]
         stats[status] = 1
@@ -53,10 +53,10 @@ def change_stats(guild_id, user_id, status):
             c.execute(f"UPDATE snowball_leaderboards SET hits = {data[2]} WHERE guild_id = {guild_id} AND user_id = {user_id}")
         elif status == 1:
             data[3] += 1
-            c.execute(f"UPDATE snowball_leaderboards SET hits = {data[3]} WHERE guild_id = {guild_id} AND user_id = {user_id}")
+            c.execute(f"UPDATE snowball_leaderboards SET misses = {data[3]} WHERE guild_id = {guild_id} AND user_id = {user_id}")
         elif status == 2:
             data[4] += 1
-            c.execute(f"UPDATE snowball_leaderboards SET hits = {data[4]} WHERE guild_id = {guild_id} AND user_id = {user_id}")
+            c.execute(f"UPDATE snowball_leaderboards SET knock_outs = {data[4]} WHERE guild_id = {guild_id} AND user_id = {user_id}")
     conn.commit()
     c.close()
     conn.close()
@@ -91,7 +91,7 @@ def get_leaderboard(guild_id):
     c = conn.cursor()
     try:
         c.execute(f"SELECT * FROM snowball_leaderboards WHERE guild_id = {guild_id} ORDER BY hits")
-        data = np.array(c.fetchmany(10))[:, 2:].tolist()
+        data = np.array(c.fetchmany(10))[:, 2:].tolist()[::-1]
     except:
         data = None
 

@@ -512,7 +512,7 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
 
 @snowball.subcommand(name = "leaderboard", description = "View your server's snowball leaderboard!")
 async def leaderboard(interaction: discord.Interaction):
-    leaderboard = get_leaderboard()
+    leaderboard = get_leaderboard(interaction.guild_id)
     leaderboard_embed = discord.Embed(title = "Server leaderboard", colour = discord.Colour.blue())
     if leaderboard:
         names = ""
@@ -536,7 +536,7 @@ async def profile(interaction: discord.Interaction, user: discord.Member = disco
     else:
         user_embed.description = f"{user.mention} has no snowball statistics yet!"
     await interaction.send(embed = user_embed)
-    
+
 @bot.slash_command(name = "help", description = "View the bot's help page")
 async def help(interaction: discord.Interaction):
     help_embed = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022.
