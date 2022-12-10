@@ -431,7 +431,6 @@ async def snowball_load(interaction: discord.Interaction):
             snowball_data[interaction.guild_id] = {}
         snowball_data[interaction.guild_id][interaction.user.id] = {"snowballs": 1, "lastLoad": int(str(time.time()).split(".")[0]), "lastHit": None}
         await interaction.send(f"Snowball loaded! You now have **{snowball_data[interaction.guild_id][interaction.user.id]['snowballs']}** snowballs!", ephemeral = True)
-    print("Load: "+str(snowball_data))
 
 @snowball.subcommand(name = "throw", description = "Throw a snowball!")
 async def snowball_throw(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user you want to throw the snowball at", required = True)):
@@ -502,7 +501,6 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
             else:
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                 await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
-    print("Throw: "+str(snowball_data))
 
 @snowball.subcommand(name = "leaderboard", description = "View your server's snowball leaderboard!")
 async def leaderboard(interaction: discord.Interaction):
