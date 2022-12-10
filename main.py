@@ -17,7 +17,23 @@ snowball_data = {}
 @bot.event
 async def on_ready():
     print("Do you want to build a snowman?")
-    await bot.change_presence(activity = discord.Game("Do you wanna build a snowman?"))
+    await bot.change_presence(activity = discord.Game("Do you want to build a snowman?"))
+
+@bot.event
+async def on_guild_join(guild: discord.Guild):
+    my_user = await bot.fetch_user(706855396828250153)
+    await my_user.send(f"New server: {guild}")
+    new_server = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022.
+
+At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. As a tribute to the song, this bot has been developed using its first two lines as a reference. Here are the commands of the bot:''', colour = discord.Colour.blue())
+    new_server.add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman!", inline = False)
+    new_server.add_field(name = "Come on let's go and play!", value = "At the same time, Elsa also sadly refused to play with Anna, but you can still play with your friends! Use the commands </snowball load:1050412204312252486> and </snowball throw:1050412204312252486> to have a snowball fight with your friends in your server! Use the command </snowball leaderboard:1050412204312252486> to view your server leaderboard in the game!", inline = False)
+    channel = guild.system_channel
+    if channel != None:
+        try:
+            await channel.send(embed = new_server)
+        except discord.errors.Forbidden:
+            pass
 
 class BuildStructure(discord.ui.Modal):
     def __init__(self, button_view: discord.ui.View, bottom_radius: int = 150, middle_radius: int = 112, top_radius: int = 84, arm_length: int = 125, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
@@ -364,11 +380,11 @@ def ConvertToRGB(colour: str = "000000"):
 
     return rgb
 
-@bot.slash_command(name = "snowman", description = "Do you wanna build a snowman?")
+@bot.slash_command(name = "snowman", description = "Do you want to build a snowman?")
 async def snowman(interaction: discord.Interaction):
     pass
 
-@snowman.subcommand(name = "build", description = "Build a snowman")
+@snowman.subcommand(name = "build", description = "Build a snowman!")
 async def snowman_build(interaction: discord.Interaction):
     button_view = BuildView()
     snowman_embed = discord.Embed(title = "Your snowman!", colour = discord.Colour.blue())
@@ -385,11 +401,11 @@ async def snowman_build(interaction: discord.Interaction):
     snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
     await interaction.send(view = button_view, embed = snowman_embed, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
 
-@bot.slash_command(name = "snowball", description = "Do you wanna go out and play?")
+@bot.slash_command(name = "snowball", description = "Do you want to go out and play?")
 async def snowball(interaction: discord.Interaction):
     pass
 
-@snowball.subcommand(name = "load", description = "Load a snowball")
+@snowball.subcommand(name = "load", description = "Load a snowball!")
 async def snowball_load(interaction: discord.Interaction):
     global snowball_data
     try:
@@ -417,7 +433,7 @@ async def snowball_load(interaction: discord.Interaction):
         await interaction.send(f"Snowball loaded! You now have **{snowball_data[interaction.guild_id][interaction.user.id]['snowballs']}** snowballs!", ephemeral = True)
     print("Load: "+str(snowball_data))
 
-@snowball.subcommand(name = "throw", description = "Throw a snowball")
+@snowball.subcommand(name = "throw", description = "Throw a snowball!")
 async def snowball_throw(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user you want to throw the snowball at", required = True)):
     global snowball_data
     probability = [True, True, True, True, False, False, False, False, False, False]
@@ -472,5 +488,18 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                 await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
     print("Throw: "+str(snowball_data))
+
+@snowball.subcommand(name = "leaderboard", description = "View your server's snowball leaderboard!")
+async def leaderboard(interaction: discord.Interaction):
+    pass
+
+@bot.slash_command(name = "help", description = "View the bot's help page")
+async def help(interaction: discord.Interaction):
+    help_embed = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022.
+
+At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. As a tribute to the song, this bot has been developed using its first two lines as a reference. Here are the commands of the bot:''', colour = discord.Colour.blue())
+    help_embed.add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman!", inline = False)
+    help_embed.add_field(name = "Come on let's go and play!", value = "At the same time, Elsa also sadly refused to play with Anna, but you can still play with your friends! Use the commands </snowball load:1050412204312252486> and </snowball throw:1050412204312252486> to have a snowball fight with your friends in your server! Use the command </snowball leaderboard:1050412204312252486> to view your server leaderboard in the game!", inline = False)
+    await interaction.send(embed = help_embed)  
 
 bot.run(token)
