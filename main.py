@@ -440,6 +440,21 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
     if user.bot:
         await interaction.send("You can't throw a snowball at a bot!", ephemeral = True)
         return
+    if user == interaction.user:
+        try:
+            if snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] != 0:
+                snowball_data[interaction.guild_id][interaction.user.id]["lastHit"] = int(str(time.time()).split(".")[0])
+                snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] = 0
+                snowball_data[interaction.guild_id][interaction.user.id]["lastLoad"] = None
+                await interaction.send(f"{interaction.user.mention} slipped and threw a snowball at themselves!")
+            else:
+                await interaction.send("You do not have any snowballs to throw! Load some with </snowball load:1050412204312252486>", ephemeral = True)
+        except:
+            if interaction.guild_id not in list(snowball_data.keys()):
+                snowball_data[interaction.guild_id] = {}
+            if interaction.user.id not in list(snowball_data[interaction.guild_id].keys()):
+                await interaction.send("You do not have any snowballs to throw! Load some with </snowball load:1050412204312252486>", ephemeral = True)
+        return
     try:
         if snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] > 0:
             if not snowball_data[interaction.guild_id][user.id]["lastHit"]:
