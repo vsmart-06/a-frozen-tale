@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import time
 import random as rd
+from records import change_stats, get_stats, get_leaderboard
 import dotenv
 import os
 
@@ -442,9 +443,7 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
     if user == interaction.user:
         try:
             if snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] != 0:
-                snowball_data[interaction.guild_id][interaction.user.id]["lastHit"] = int(str(time.time()).split(".")[0])
-                snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] = 0
-                snowball_data[interaction.guild_id][interaction.user.id]["lastLoad"] = None
+                snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                 await interaction.send(f"{interaction.user.mention} slipped and threw a snowball at themselves!")
             else:
                 await interaction.send("You do not have any snowballs to throw! Load some with </snowball load:1050412204312252486>", ephemeral = True)
@@ -464,9 +463,12 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
                     snowball_data[interaction.guild_id][user.id]["lastLoad"] = None
                     snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                     await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {user.mention} with a snowball!")
+                    change_stats(interaction.guild_id, interaction.user.id, 0)
+                    change_stats(interaction.guild_id, user.id, 2)
                 else:
                     snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                     await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
+                    change_stats(interaction.guild_id, interaction.user.id, 1)
             else:
                 if int(str(time.time()).split(".")[0]) - snowball_data[interaction.guild_id][user.id]["lastHit"] >= 30:
                     snowball_data[interaction.guild_id][user.id]['lastHit'] = None
@@ -477,9 +479,12 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
                         snowball_data[interaction.guild_id][user.id]["lastLoad"] = None
                         snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                         await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {user.mention} with a snowball!")
+                        change_stats(interaction.guild_id, interaction.user.id, 0)
+                        change_stats(interaction.guild_id, user.id, 2)
                     else:
                         snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                         await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
+                        change_stats(interaction.guild_id, interaction.user.id, 1)
                 else:
                     await interaction.send(f"{user.mention} has recently been hit by a snowball! Try again <t:{snowball_data[interaction.guild_id][user.id]['lastHit']+30}:R>", ephemeral = True)
         else:
@@ -498,14 +503,40 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
                 snowball_data[interaction.guild_id][user.id]["lastLoad"] = None
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                 await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {user.mention} with a snowball!")
+                change_stats(interaction.guild_id, interaction.user.id, 0)
+                change_stats(interaction.guild_id, user.id, 2)
             else:
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                 await interaction.send(f"Close shot! {interaction.user.mention} missed {user.mention} by a whisker!")
+                change_stats(interaction.guild_id, interaction.user.id, 1)
 
 @snowball.subcommand(name = "leaderboard", description = "View your server's snowball leaderboard!")
 async def leaderboard(interaction: discord.Interaction):
-    pass
+    leaderboard = get_leaderboard()
+    leaderboard_embed = discord.Embed(title = "Server leaderboard", colour = discord.Colour.blue())
+    if leaderboard:
+        names = ""
+        for x in leaderboard:
+            names += f"<@!{x[0]}>: Hits: {x[1]} | Misses: {x[2]} | Knock Outs: {x[3]}\n"
+        leaderboard_embed.description = names
+    else:
+        leaderboard_embed.description = "Nobody has played the snowball game in this server yet!"
+    await interaction.send(embed = leaderboard_embed)
 
+@snowball.subcommand(name = "profile", description = "View a user's snowball statistics")
+async def profile(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who's profile you would like to view", required = False)):
+    if not user:
+        user = interaction.user
+    user_stats = get_stats(interaction.guild.id, user.id)
+    user_embed = discord.Embed(title = f"Statistics for {user.name} in {interaction.guild}", colour = discord.Colour.blue())
+    if user_stats:
+        user_embed.add_field(name = "Hits", value = user_stats[0])
+        user_embed.add_field(name = "Misses", value = user_stats[1])
+        user_embed.add_field(name = "Knock Outs", value = user_stats[2])
+    else:
+        user_embed.description = f"{user.mention} has no snowball statistics yet!"
+    await interaction.send(embed = user_embed)
+    
 @bot.slash_command(name = "help", description = "View the bot's help page")
 async def help(interaction: discord.Interaction):
     help_embed = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022.
