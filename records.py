@@ -91,7 +91,7 @@ def get_leaderboard(guild_id):
     c = conn.cursor()
     try:
         c.execute(f"SELECT * FROM snowball_leaderboards WHERE guild_id = {guild_id} ORDER BY hits")
-        data = np.array(c.fetchmany(10))[:, 2:].tolist()[::-1]
+        data = np.array(c.fetchall())[:, 2:].tolist()[::-1][:10]
     except:
         data = None
 
