@@ -474,7 +474,9 @@ def ConvertToRGB(colour: str = "000000"):
 def ConvertToHex(colour: tuple):
     final = ""
     for x in colour:
-        final += hex(x)[2:]
+        hexa = hex(x)[2:]
+        hexa = "0"*(2-len(hexa))+hexa
+        final += hexa
     return final
 
 def colourBox(colour: tuple, guild_id: int, user: int):
