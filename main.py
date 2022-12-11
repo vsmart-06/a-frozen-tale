@@ -351,7 +351,8 @@ class ColourView(discord.ui.Select):
             discord.SelectOption(label = "Brown", description = "Get the hex code for the colour brown", emoji = "🟤"),
             discord.SelectOption(label = "Black", description = "Get the hex code for the colour black", emoji = "⚫"),
             discord.SelectOption(label = "White", description = "Get the hex code for the colour white", emoji = "⚪"),
-            discord.SelectOption(label = "Choose", description = "View the colour for your chosen hex code", emoji = "🎨")
+            discord.SelectOption(label = "Choose", description = "View the colour for your chosen hex code", emoji = "🎨"),
+            discord.SelectOption(label = "Random", description = "Get the hex code for a random colour", emoji = "🎲")
         ]
         super().__init__(placeholder = "Select a colour option", min_values = 1, max_values = 1, options = options)
     
@@ -374,10 +375,12 @@ class ColourView(discord.ui.Select):
             code = "000000"
         elif self.values[0] == "White":
             code = "ffffff"
-        else:
+        elif self.values[0] == "Choose":
             hex_modal = ColourModal()
             await interaction.response.send_modal(hex_modal)
             return
+        elif self.values[0] == "Random":
+            code = ConvertToHex((rd.randint(0, 255), rd.randint(0, 255), rd.randint(0, 255)))
         colour_embed = discord.Embed(title = "Hex code to colour", colour = discord.Colour.blue())
         colour_embed.add_field(name = "Hex code", value = code)
         colour_embed.add_field(name = "RGB code", value = ConvertToRGB(code))
@@ -509,7 +512,20 @@ async def snowman_build(interaction: discord.Interaction):
 async def snowman_favourite(interaction: discord.Interaction):
     fav_snowman = get_snowman(interaction.user.id)
     if fav_snowman:
-        await interaction.send("This is your favourite snowman!")
+        createImage(fav_snowman[0], fav_snowman[1], fav_snowman[2], fav_snowman[3], fav_snowman[4], ConvertToRGB(fav_snowman[5])[::-1], ConvertToRGB(fav_snowman[6])[::-1], ConvertToRGB(fav_snowman[7])[::-1], ConvertToRGB(fav_snowman[8])[::-1], ConvertToRGB(fav_snowman[9])[::-1], interaction.guild_id, interaction.user.id)
+        snowman_embed = discord.Embed(title = "Your snowman!", colour = discord.Colour.blue())
+        snowman_embed.add_field(name = "Bottom snowball radius", value = fav_snowman[0])
+        snowman_embed.add_field(name = "Middle snowball radius", value = fav_snowman[1])
+        snowman_embed.add_field(name = "Top snowball radius", value = fav_snowman[2])
+        snowman_embed.add_field(name = "Arm length", value = fav_snowman[3])
+        snowman_embed.add_field(name = "Number of buttons", value = fav_snowman[4])
+        snowman_embed.add_field(name = "Primary hat colour", value = ConvertToRGB(fav_snowman[5]))
+        snowman_embed.add_field(name = "Secondary hat colour", value = ConvertToRGB(fav_snowman[6]))
+        snowman_embed.add_field(name = "Primary scarf colour", value = ConvertToRGB(fav_snowman[7]))
+        snowman_embed.add_field(name = "Secondary scarf colour", value = ConvertToRGB(fav_snowman[8]))
+        snowman_embed.add_field(name = "Background colour", value = ConvertToRGB(fav_snowman[9]))
+        snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
+        await interaction.send(embed = snowman_embed, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     else:
         await interaction.send("You do not have a favourite snowman yet!", ephemeral = True)
 
