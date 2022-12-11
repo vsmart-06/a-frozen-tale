@@ -306,21 +306,104 @@ class BuildDesign(discord.ui.Modal):
         self.arm_length_value = arm_length
         self.num_buttons_value = num_buttons
 
+class ColourModal(discord.ui.Modal):
+    def __init__(self):
+        super().__init__("Hex code to colour!", timeout = None)
+
+        self.colour = discord.ui.TextInput(
+            label = "Hex code",
+            style = discord.TextInputStyle.short,
+            placeholder = "Enter the hex code",
+            required = True
+        )
+        self.add_item(self.colour)
+    
+    async def callback(self, interaction: discord.Interaction):
+        self.colour_value = ConvertToRGB(self.colour.value)
+        if self.colour_value == 0:
+            await interaction.send("The hex code has to have 6 symbols!", ephemeral = True)
+            return
+        elif self.colour_value == 1:
+            await interaction.send("Invalid hex code", ephemeral = True)
+            return
+        colour_embed = discord.Embed(title = "Hex code to colour", colour = discord.Colour.blue())
+        colour_embed.add_field(name = "Hex code", value = self.colour.value)
+        colour_embed.add_field(name = "RGB code", value = self.colour_value)
+        colourBox(self.colour_value[::-1], interaction.guild_id, interaction.user.id)
+        await interaction.response.edit_message(embed = colour_embed, file = discord.File(f"./build-a-snowman/colours/{interaction.guild_id}_{interaction.user.id}.png"))
+
+
+class ColourView(discord.ui.Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label = "Red", description = "Get the hex code for the colour red", emoji = "🔴"),
+            discord.SelectOption(label = "Orange", description = "Get the hex code for the colour orange", emoji = "🟠"),
+            discord.SelectOption(label = "Yellow", description = "Get the hex code for the colour yellow", emoji = "🟡"),
+            discord.SelectOption(label = "Green", description = "Get the hex code for the colour green", emoji = "🟢"),
+            discord.SelectOption(label = "Blue", description = "Get the hex code for the colour blue", emoji = "🔵"),
+            discord.SelectOption(label = "Purple", description = "Get the hex code for the colour purple", emoji = "🟣"),
+            discord.SelectOption(label = "Brown", description = "Get the hex code for the colour brown", emoji = "🟤"),
+            discord.SelectOption(label = "Black", description = "Get the hex code for the colour black", emoji = "⚫"),
+            discord.SelectOption(label = "White", description = "Get the hex code for the colour white", emoji = "⚪"),
+            discord.SelectOption(label = "Choose", description = "View the colour for your chosen hex code", emoji = "🎨")
+        ]
+        super().__init__(placeholder = "Select a customization option", min_values = 1, max_values = 1, options = options)
+    
+    async def callback(self, interaction: discord.Interaction):
+        if self.values[0] == "Red":
+            code = "ff0000"
+        elif self.values[0] == "Orange":
+            code = "ffa500"
+        elif self.values[0] == "Yellow":
+            code = "ffd800"
+        elif self.values[0] == "Green":
+            code = "44c022"
+        elif self.values[0] == "Blue":
+            code = "0081ff"
+        elif self.values[0] == "Purple":
+            code = "7b00ff"
+        elif self.values[0] == "Brown":
+            code = "964b00"
+        elif self.values[0] == "Black":
+            code = "000000"
+        elif self.values[0] == "White":
+            code = "ffffff"
+        else:
+            hex_modal = ColourModal()
+            await interaction.response.send_modal(hex_modal)
+            return
+        colour_embed = discord.Embed(title = "Hex code to colour", colour = discord.Colour.blue())
+        colour_embed.add_field(name = "Hex code", value = code)
+        colour_embed.add_field(name = "RGB code", value = ConvertToRGB(code))
+        colourBox(ConvertToRGB(code)[::-1], interaction.guild_id, interaction.user.id)
+        await interaction.response.edit_message(embed = colour_embed, file = discord.File(f"./build-a-snowman/colours/{interaction.guild_id}_{interaction.user.id}.png"))
+        return
+
 class BuildView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout = None)
         self.modal_structure = BuildStructure(self)
         self.modal_design = BuildDesign(self)
     
-    @discord.ui.button(label = "🔨 Build", style = discord.ButtonStyle.blurple)
+    @discord.ui.button(label = "Build", style = discord.ButtonStyle.blurple, emoji = "🛠")
     async def structure(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.send_modal(self.modal_structure)
     
-    @discord.ui.button(label = "🎨 Design", style = discord.ButtonStyle.blurple)
+    @discord.ui.button(label = "Design", style = discord.ButtonStyle.blurple, emoji = "🖌")
     async def design(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.send_modal(self.modal_design)
     
-    @discord.ui.button(label = "✅ Done", style = discord.ButtonStyle.blurple)
+    @discord.ui.button(label = "Colour picker", style = discord.ButtonStyle.blurple, emoji = "🎨")
+    async def colours(self, button: discord.ui.Button, interaction: discord.Interaction):
+        view = discord.ui.View()
+        view.add_item(ColourView())
+        await interaction.send(view = view, ephemeral = True)
+
+    @discord.ui.button(label = "Favourite", style = discord.ButtonStyle.blurple, emoji = "🌟")
+    async def favourite(self, button: discord.ui.Button, interaction: discord.Interaction):
+        pass
+
+    @discord.ui.button(label = "Done", style = discord.ButtonStyle.blurple, emoji = "✅")
     async def done(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(view = None)
 
@@ -335,8 +418,8 @@ def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_len
     arm_right_end = (int(side//2+middle_radius+(arm_length)//1.4), int(side-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
     arm_left_start = ((side//2-middle_radius), (side-(2*bottom_radius+middle_radius)))
     arm_left_end = (int(side//2-middle_radius-(arm_length)//1.4), int(side-(2*bottom_radius+middle_radius)-(arm_length)//1.4))
-    cv2.line(img, arm_right_start, arm_right_end, (0, 75, 150), 3)
-    cv2.line(img, arm_left_start, arm_left_end, (0, 75, 150), 3)
+    cv2.line(img, arm_right_start, arm_right_end, (0, 75, 150), 5)
+    cv2.line(img, arm_left_start, arm_left_end, (0, 75, 150), 5)
     hat_bottom_start = (side//2-middle_radius, side-int(2*bottom_radius+2*middle_radius+2.5*top_radius)+top_radius//6)
     hat_bottom_end = (side//2+middle_radius, side-(2*bottom_radius+2*middle_radius+2*top_radius)+top_radius//6)
     hat_top_start = (side//2-middle_radius//2, side-(2*bottom_radius+2*middle_radius+4*top_radius)+top_radius//6)
@@ -380,6 +463,11 @@ def ConvertToRGB(colour: str = "000000"):
     rgb = tuple(rgb)
 
     return rgb
+
+def colourBox(colour: tuple, guild_id: int, user: int):
+    box = np.zeros((512, 1024, 3), np.uint8)
+    box[:,:] = colour
+    cv2.imwrite(f"./build-a-snowman/colours/{guild_id}_{user}.png", box)
 
 @bot.slash_command(name = "snowman", description = "Do you want to build a snowman?")
 async def snowman(interaction: discord.Interaction):
