@@ -24,7 +24,7 @@ async def on_ready():
 async def on_guild_join(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send(f"New server: {guild}")
-    new_server = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022.
+    new_server = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!
 
 At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. As a tribute to the song, this bot has been developed using its first two lines as a reference. Here are the commands of the bot:''', colour = discord.Colour.blue())
     new_server.add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1050412207504101458>!", inline = False)
@@ -666,7 +666,7 @@ async def snowball_profile(interaction: discord.Interaction, user: discord.Membe
 
 @bot.slash_command(name = "help", description = "View the bot's help page")
 async def help(interaction: discord.Interaction):
-    help_embed = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022.
+    help_embed = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!
 
 At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. As a tribute to the song, this bot has been developed using its first two lines as a reference. Here are the commands of the bot:''', colour = discord.Colour.blue())
     help_embed.add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1050412207504101458>!", inline = False)
