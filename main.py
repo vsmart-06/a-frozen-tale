@@ -450,9 +450,12 @@ def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_len
         point = (side//2 + x, (side-(2*bottom_radius+2*middle_radius+top_radius))+y_coord)
         cv2.circle(img, point, top_radius//10, (0, 0, 0), -1)
     dist = (side-4*bottom_radius//3) - (side-2*bottom_radius-middle_radius)
-    breaks = dist//(num_buttons-1)
-    for x in range(num_buttons):
-        cv2.circle(img, (side//2, (side-4*bottom_radius//3) - x*breaks), middle_radius//10, (0, 0, 0), -1)
+    if num_buttons > 1:
+        breaks = dist//(num_buttons-1)
+        for x in range(num_buttons):
+            cv2.circle(img, (side//2, (side-4*bottom_radius//3) - x*breaks), middle_radius//10, (0, 0, 0), -1)
+    elif num_buttons == 1:
+        cv2.circle(img, (side//2, side-2*bottom_radius), middle_radius//10, (0, 0, 0), -1)
     cv2.imwrite(f"./build-a-snowman/snowmen/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
