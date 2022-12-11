@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import time
 import random as rd
-from records import change_stats, get_stats, get_leaderboard
+from records import save_snowman, get_snowman, change_stats, get_stats, get_leaderboard
 import dotenv
 import os
 
@@ -174,6 +174,9 @@ class BuildStructure(discord.ui.Modal):
             createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.rgb_sec[::-1], self.scarf[::-1], self.scarf_sec[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
             return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
+    def getValues(self):
+        return [self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, ConvertToHex(self.rgb), ConvertToHex(self.rgb_sec), ConvertToHex(self.scarf), ConvertToHex(self.scarf_sec), ConvertToHex(self.bg)]
+
     def setValues(self, hat_colour, hat_colour_secondary, scarf_colour, scarf_colour_secondary, bg_colour):
         self.rgb = hat_colour
         self.rgb_sec = hat_colour_secondary
@@ -299,6 +302,9 @@ class BuildDesign(discord.ui.Modal):
         createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.rgb_sec[::-1], self.scarf[::-1], self.scarf_sec[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
         return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
+    def getValues(self):
+        return [self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, ConvertToHex(self.rgb), ConvertToHex(self.rgb_sec), ConvertToHex(self.scarf), ConvertToHex(self.scarf_sec), ConvertToHex(self.bg)]
+
     def setValues(self, bottom_radius, middle_radius, top_radius, arm_length, num_buttons):
         self.bottom_radius_value = bottom_radius
         self.middle_radius_value = middle_radius
@@ -401,7 +407,8 @@ class BuildView(discord.ui.View):
 
     @discord.ui.button(label = "Favourite", style = discord.ButtonStyle.blurple, emoji = "🌟")
     async def favourite(self, button: discord.ui.Button, interaction: discord.Interaction):
-        pass
+        save_snowman(interaction.user.id, self.modal_structure.getValues())
+        await interaction.response.edit_message(content = "**Snowman saved!**", view = None)
 
     @discord.ui.button(label = "Done", style = discord.ButtonStyle.blurple, emoji = "✅")
     async def done(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -464,6 +471,12 @@ def ConvertToRGB(colour: str = "000000"):
 
     return rgb
 
+def ConvertToHex(colour: tuple):
+    final = ""
+    for x in colour:
+        final += hex(x)[2:]
+    return final
+
 def colourBox(colour: tuple, guild_id: int, user: int):
     box = np.zeros((512, 1024, 3), np.uint8)
     box[:,:] = colour
@@ -489,6 +502,14 @@ async def snowman_build(interaction: discord.Interaction):
     snowman_embed.add_field(name = "Background colour", value = (55, 100, 255))
     snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
     await interaction.send(view = button_view, embed = snowman_embed, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
+
+@snowman.subcommand(name = "favourite", description = "View your favourite snowman!")
+async def snowman_favourite(interaction: discord.Interaction):
+    fav_snowman = get_snowman(interaction.user.id)
+    if fav_snowman:
+        await interaction.send("This is your favourite snowman!")
+    else:
+        await interaction.send("You do not have a favourite snowman yet!", ephemeral = True)
 
 @bot.slash_command(name = "snowball", description = "Do you want to go out and play?")
 async def snowball(interaction: discord.Interaction):
@@ -599,7 +620,7 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
                 change_stats(interaction.guild_id, interaction.user.id, 1)
 
 @snowball.subcommand(name = "leaderboard", description = "View your server's snowball leaderboard!")
-async def leaderboard(interaction: discord.Interaction):
+async def snowball_leaderboard(interaction: discord.Interaction):
     leaderboard = get_leaderboard(interaction.guild_id)
     leaderboard_embed = discord.Embed(title = "Server leaderboard", colour = discord.Colour.blue())
     if leaderboard:
@@ -612,7 +633,7 @@ async def leaderboard(interaction: discord.Interaction):
     await interaction.send(embed = leaderboard_embed)
 
 @snowball.subcommand(name = "profile", description = "View a user's snowball statistics")
-async def profile(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who's profile you would like to view", required = False)):
+async def snowball_profile(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who's profile you would like to view", required = False)):
     if not user:
         user = interaction.user
     user_stats = get_stats(interaction.guild.id, user.id)

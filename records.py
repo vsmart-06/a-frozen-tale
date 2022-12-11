@@ -27,12 +27,57 @@ try:
         misses BIGINT NOT NULL,
         knock_outs BIGINT NOT NULL
         )''')
+
+    c.execute('''CREATE TABLE snowmen (
+        user_id BIGINT NOT NULL PRIMARY KEY,
+        bottom_radius BIGINT NOT NULL,
+        middle_radius BIGINT NOT NULL,
+        top_radius BIGINT NOT NULL,
+        arm_length BIGINT NOT NULL,
+        num_buttons BIGINT NOT NULL,
+        p_hat VARCHAR(6) NOT NULL,
+        s_hat VARCHAR(6) NOT NULL,
+        p_scarf VARCHAR(6) NOT NULL,
+        s_scarf VARCHAR(6) NOT NULL,
+        bg_colour VARCHAR(6) NOT NULL
+        )''')
     conn.commit()
 
 except db.errors.ProgrammingError:
     pass
 
-def change_stats(guild_id, user_id, status):
+def save_snowman(user_id: int, data: list):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    try:
+        c.execute(f"UPDATE snowmen SET bottom_radius = {data[0]}, middle_radius = {data[1]}, top_radius = {data[2]}, arm_length = {data[3]}, num_buttons = {data[4]}, p_hat = {data[5]}, s_hat = {data[6]}, p_scarf = {data[7]}, s_scarf = {data[8]}, bg_colour = {data[9]} WHERE user_id = {user_id}")
+    except:
+        c.execute(f"INSERT INTO snowmen (user_id, bottom_radius, middle_radius, top_radius, arm_length, num_buttons, p_hat, s_hat, p_scarf, s_scarf, bg_colour) VALUES ({user_id}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[8]}, {data[9]})")
+    conn.commit()
+    c.close()
+    conn.close()
+
+def get_snowman(user_id: int):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    try:
+        c.execute(f"SELECT * FROM snowmen WHERE user_id = {user_id}")
+        data = c.fetchone()[1:]
+    except:
+        data = None
+    return data
+
+def change_stats(guild_id: int, user_id: int, status: int):
     conn = db.connect(
     host = h,
     user = u,
@@ -62,7 +107,7 @@ def change_stats(guild_id, user_id, status):
     conn.close()
     return
 
-def get_stats(guild_id, user_id):
+def get_stats(guild_id: int, user_id: int):
     conn = db.connect(
     host = h,
     user = u,
@@ -81,7 +126,7 @@ def get_stats(guild_id, user_id):
     conn.close()
     return data
 
-def get_leaderboard(guild_id):
+def get_leaderboard(guild_id: int):
     conn = db.connect(
     host = h,
     user = u,
