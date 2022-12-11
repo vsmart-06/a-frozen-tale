@@ -55,6 +55,8 @@ def save_snowman(user_id: int, data: list):
     )
     c = conn.cursor()
     try:
+        c.execute(f"SELECT * FROM snowmen WHERE user_id = {user_id}")
+        old_data = list(c.fetchone()[1:])
         c.execute(f"UPDATE snowmen SET bottom_radius = {data[0]}, middle_radius = {data[1]}, top_radius = {data[2]}, arm_length = {data[3]}, num_buttons = {data[4]}, p_hat = '{data[5]}', s_hat = '{data[6]}', p_scarf = '{data[7]}', s_scarf = '{data[8]}', bg_colour = '{data[9]}' WHERE user_id = {user_id}")
     except:
         c.execute(f"INSERT INTO snowmen (user_id, bottom_radius, middle_radius, top_radius, arm_length, num_buttons, p_hat, s_hat, p_scarf, s_scarf, bg_colour) VALUES ({user_id}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, '{data[5]}', '{data[6]}', '{data[7]}', '{data[8]}', '{data[9]}')")
@@ -73,7 +75,7 @@ def get_snowman(user_id: int):
     c = conn.cursor()
     try:
         c.execute(f"SELECT * FROM snowmen WHERE user_id = {user_id}")
-        data = c.fetchone()[1:]
+        data = list(c.fetchone()[1:])
     except:
         data = None
     return data
