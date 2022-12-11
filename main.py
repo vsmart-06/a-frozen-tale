@@ -353,7 +353,7 @@ class ColourView(discord.ui.Select):
             discord.SelectOption(label = "White", description = "Get the hex code for the colour white", emoji = "⚪"),
             discord.SelectOption(label = "Choose", description = "View the colour for your chosen hex code", emoji = "🎨")
         ]
-        super().__init__(placeholder = "Select a customization option", min_values = 1, max_values = 1, options = options)
+        super().__init__(placeholder = "Select a colour option", min_values = 1, max_values = 1, options = options)
     
     async def callback(self, interaction: discord.Interaction):
         if self.values[0] == "Red":
