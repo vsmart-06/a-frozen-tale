@@ -563,20 +563,54 @@ async def snowball_load(interaction: discord.Interaction):
         snowball_data[interaction.guild_id][interaction.user.id] = {"snowballs": 1, "lastLoad": int(str(time.time()).split(".")[0]), "lastHit": None}
         await interaction.send(f"Snowball loaded! You now have **{snowball_data[interaction.guild_id][interaction.user.id]['snowballs']}** snowballs!", ephemeral = True)
 
-def createShooter(guild_id: int, user: int, loc: int = 1):
+def createShooter(guild_id: int, user: int, loc: int = 1, game: bool = True, real_loc: int = 1):
     side = 512
     img = np.zeros((side, side, 3), np.uint8)
-    cv2.circle(img, (side//6, side//6), 5, (255, 255, 255), -1)
-    cv2.circle(img, (side//6, side//6 + 15), 10, (255, 255, 255), -1)
-    cv2.circle(img, (side//6, side//6 + 40), 15, (255, 255, 255), -1)
 
-    cv2.circle(img, (3*side//6, side//6), 5, (255, 255, 255), -1)
-    cv2.circle(img, (3*side//6, side//6 + 15), 10, (255, 255, 255), -1)
-    cv2.circle(img, (3*side//6, side//6 + 40), 15, (255, 255, 255), -1)
+    if game:
+        cv2.circle(img, (side//6, side//6), 5, (255, 255, 255), -1)
+        cv2.circle(img, (side//6, side//6 + 15), 10, (255, 255, 255), -1)
+        cv2.circle(img, (side//6, side//6 + 40), 15, (255, 255, 255), -1)
+    else:
+        if real_loc == 0:
+            cv2.circle(img, (side//6, side//6 + 15), 20, (0, 0, 255), -1)
+            cv2.circle(img, (side//6, side//6 + 15), 15, (255, 255, 255), -1)
+            cv2.circle(img, (side//6, side//6 + 15), 10, (0, 0, 255), -1)
+            cv2.circle(img, (side//6, side//6 + 15), 5, (255, 255, 255), -1)
+        else:
+            cv2.circle(img, (side//6, side//6), 5, (255, 255, 255), -1)
+            cv2.circle(img, (side//6, side//6 + 15), 10, (255, 255, 255), -1)
+            cv2.circle(img, (side//6, side//6 + 40), 15, (255, 255, 255), -1)
 
-    cv2.circle(img, (5*side//6, side//6), 5, (255, 255, 255), -1)
-    cv2.circle(img, (5*side//6, side//6 + 15), 10, (255, 255, 255), -1)
-    cv2.circle(img, (5*side//6, side//6 + 40), 15, (255, 255, 255), -1)
+    if game:
+        cv2.circle(img, (3*side//6, side//6), 5, (255, 255, 255), -1)
+        cv2.circle(img, (3*side//6, side//6 + 15), 10, (255, 255, 255), -1)
+        cv2.circle(img, (3*side//6, side//6 + 40), 15, (255, 255, 255), -1)
+    else:
+        if real_loc == 1:
+            cv2.circle(img, (3*side//6, side//6 + 15), 20, (0, 0, 255), -1)
+            cv2.circle(img, (3*side//6, side//6 + 15), 15, (255, 255, 255), -1)
+            cv2.circle(img, (3*side//6, side//6 + 15), 10, (0, 0, 255), -1)
+            cv2.circle(img, (3*side//6, side//6 + 15), 5, (255, 255, 255), -1)
+        else:
+            cv2.circle(img, (3*side//6, side//6), 5, (255, 255, 255), -1)
+            cv2.circle(img, (3*side//6, side//6 + 15), 10, (255, 255, 255), -1)
+            cv2.circle(img, (3*side//6, side//6 + 40), 15, (255, 255, 255), -1)
+
+    if game:
+        cv2.circle(img, (5*side//6, side//6), 5, (255, 255, 255), -1)
+        cv2.circle(img, (5*side//6, side//6 + 15), 10, (255, 255, 255), -1)
+        cv2.circle(img, (5*side//6, side//6 + 40), 15, (255, 255, 255), -1)
+    else:
+        if real_loc == 2:
+            cv2.circle(img, (5*side//6, side//6 + 15), 20, (0, 0, 255), -1)
+            cv2.circle(img, (5*side//6, side//6 + 15), 15, (255, 255, 255), -1)
+            cv2.circle(img, (5*side//6, side//6 + 15), 10, (0, 0, 255), -1)
+            cv2.circle(img, (5*side//6, side//6 + 15), 5, (255, 255, 255), -1)
+        else:
+            cv2.circle(img, (5*side//6, side//6), 5, (255, 255, 255), -1)
+            cv2.circle(img, (5*side//6, side//6 + 15), 10, (255, 255, 255), -1)
+            cv2.circle(img, (5*side//6, side//6 + 40), 15, (255, 255, 255), -1)
 
     if loc == 0:
         cv2.rectangle(img, (side//6 + 30, side), (side//6 - 30, side-70), (34, 192, 68), -1)
@@ -612,7 +646,7 @@ class ShootView(discord.ui.View):
         self.loc -= 1
         if self.loc < 0:
             self.loc = 2
-        createShooter(interaction.guild_id, interaction.user.id, self.loc)
+        createShooter(interaction.guild_id, interaction.user.id, self.loc, True, self.target_loc)
         await interaction.response.edit_message(file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"))
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "▶")
@@ -620,24 +654,25 @@ class ShootView(discord.ui.View):
         self.loc += 1
         if self.loc > 2:
             self.loc = 0
-        createShooter(interaction.guild_id, interaction.user.id, self.loc)
+        createShooter(interaction.guild_id, interaction.user.id, self.loc, True, self.target_loc)
         await interaction.response.edit_message(file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"))
     
     @discord.ui.button(label = "Shoot", style = discord.ButtonStyle.blurple, emoji = "💥")
     async def shoot(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if snowball_data[interaction.guild_id][self.opponent.id]["snowballs"] > 0:
+        if snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] > 0:
+            createShooter(interaction.guild_id, interaction.user.id, self.loc, False, self.target_loc)
             if self.loc == self.target_loc:
                 snowball_data[interaction.guild_id][self.opponent.id]["lastHit"] = int(str(time.time()).split(".")[0])
                 snowball_data[interaction.guild_id][self.opponent.id]["snowballs"] = 0
                 snowball_data[interaction.guild_id][self.opponent.id]["lastLoad"] = None
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
-                await interaction.response.edit_message(content = "Correct target hit!", view = None)
+                await interaction.response.edit_message(content = "Correct target hit!", file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"), view = None)
                 await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {self.opponent.mention} with a snowball!")
                 change_stats(interaction.guild_id, interaction.user.id, 0)
                 change_stats(interaction.guild_id, self.opponent.id, 2)
             else:
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
-                await interaction.response.edit_message(content = "Incorrect target hit!", view = None)
+                await interaction.response.edit_message(content = "Incorrect target hit!", file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"), view = None)
                 await interaction.send(f"Close shot! {interaction.user.mention} missed {self.opponent.mention} by a whisker!")
                 change_stats(interaction.guild_id, interaction.user.id, 1)
         else:
