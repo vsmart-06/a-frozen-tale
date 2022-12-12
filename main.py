@@ -566,6 +566,7 @@ async def snowball_load(interaction: discord.Interaction):
 def createShooter(guild_id: int, user: int, loc: int = 1, game: bool = True, real_loc: int = 1):
     side = 512
     img = np.zeros((side, side, 3), np.uint8)
+    img[:,:] = (255, 100, 55)
 
     if game:
         cv2.circle(img, (side//6, side//6), 5, (255, 255, 255), -1)
