@@ -566,32 +566,35 @@ async def snowball_load(interaction: discord.Interaction):
 def createShooter(guild_id: int, user: int, loc: int = 1):
     side = 512
     img = np.zeros((side, side, 3), np.uint8)
-    cv2.circle(img, (side//6, side//6), 20, (0, 0, 255), -1)
-    cv2.circle(img, (side//6, side//6), 15, (255, 255, 255), -1)
-    cv2.circle(img, (side//6, side//6), 10, (0, 0, 255), -1)
     cv2.circle(img, (side//6, side//6), 5, (255, 255, 255), -1)
+    cv2.circle(img, (side//6, side//6 + 15), 10, (255, 255, 255), -1)
+    cv2.circle(img, (side//6, side//6 + 40), 15, (255, 255, 255), -1)
 
-    cv2.circle(img, (3*side//6, side//6), 20, (0, 0, 255), -1)
-    cv2.circle(img, (3*side//6, side//6), 15, (255, 255, 255), -1)
-    cv2.circle(img, (3*side//6, side//6), 10, (0, 0, 255), -1)
     cv2.circle(img, (3*side//6, side//6), 5, (255, 255, 255), -1)
+    cv2.circle(img, (3*side//6, side//6 + 15), 10, (255, 255, 255), -1)
+    cv2.circle(img, (3*side//6, side//6 + 40), 15, (255, 255, 255), -1)
 
-    cv2.circle(img, (5*side//6, side//6), 20, (0, 0, 255), -1)
-    cv2.circle(img, (5*side//6, side//6), 15, (255, 255, 255), -1)
-    cv2.circle(img, (5*side//6, side//6), 10, (0, 0, 255), -1)
     cv2.circle(img, (5*side//6, side//6), 5, (255, 255, 255), -1)
+    cv2.circle(img, (5*side//6, side//6 + 15), 10, (255, 255, 255), -1)
+    cv2.circle(img, (5*side//6, side//6 + 40), 15, (255, 255, 255), -1)
 
     if loc == 0:
         cv2.rectangle(img, (side//6 + 30, side), (side//6 - 30, side-70), (34, 192, 68), -1)
         cv2.rectangle(img, (side//6 + 10, side-70), (side//6 - 10, side-140), (34, 192, 68), -1)
+        cv2.rectangle(img, (side//6 + 15, side), (side//6 - 15, side-50), (0, 0, 255), -1)
+        cv2.rectangle(img, (side//6 + 5, side), (side//6 - 5, side-40), (0, 216, 255), -1)
 
     elif loc == 1:
         cv2.rectangle(img, (3*side//6 + 30, side), (3*side//6 - 30, side-70), (34, 192, 68), -1)
         cv2.rectangle(img, (3*side//6 + 10, side-70), (3*side//6 - 10, side-140), (34, 192, 68), -1)
+        cv2.rectangle(img, (3*side//6 + 15, side), (3*side//6 - 15, side-50), (0, 0, 255), -1)
+        cv2.rectangle(img, (3*side//6 + 5, side), (3*side//6 - 5, side-40), (0, 216, 255), -1)
 
     elif loc == 2:
         cv2.rectangle(img, (5*side//6 + 30, side), (5*side//6 - 30, side-70), (34, 192, 68), -1)
         cv2.rectangle(img, (5*side//6 + 10, side-70), (5*side//6 - 10, side-140), (34, 192, 68), -1)
+        cv2.rectangle(img, (5*side//6 + 15, side), (5*side//6 - 15, side-50), (0, 0, 255), -1)
+        cv2.rectangle(img, (5*side//6 + 5, side), (5*side//6 - 5, side-40), (0, 216, 255), -1)
         
     cv2.imwrite(f"./build-a-snowman/shooters/{guild_id}_{user}.png", img)
 
