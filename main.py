@@ -729,6 +729,29 @@ async def snowball_leaderboard(interaction: discord.Interaction):
     if leaderboard:
         names = ""
         for x in leaderboard:
+            if x == leaderboard[0]:
+                names += "🥇"
+            elif x == leaderboard[1]:
+                if x[1:] == leaderboard[0][1:]:
+                    names += "🥇"
+                else:
+                    names += "🥈"
+            elif x == leaderboard[2]:
+                if x[1:] == leaderboard[0][1:]:
+                    names += "🥇"
+                elif x[1:] == leaderboard[1][1:]:
+                    names += "🥈"
+                else:
+                    names += "🥉"
+            else:
+                if x[1:] == leaderboard[0][1:]:
+                    names += "🥇"
+                elif x[1:] == leaderboard[1][1:]:
+                    names += "🥈"
+                elif x[1:] == leaderboard[2][1:]:
+                    names += "🥉"
+                else:
+                    names += "👏"
             names += f"<@!{x[0]}>: Hits: {x[1]} | Misses: {x[2]} | Knock Outs: {x[3]}\n"
         leaderboard_embed.description = names
     else:
