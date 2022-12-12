@@ -625,20 +625,24 @@ class ShootView(discord.ui.View):
     
     @discord.ui.button(label = "Shoot", style = discord.ButtonStyle.blurple, emoji = "💥")
     async def shoot(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if self.loc == self.target_loc:
-            snowball_data[interaction.guild_id][self.opponent.id]["lastHit"] = int(str(time.time()).split(".")[0])
-            snowball_data[interaction.guild_id][self.opponent.id]["snowballs"] = 0
-            snowball_data[interaction.guild_id][self.opponent.id]["lastLoad"] = None
-            snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
-            await interaction.response.edit_message(content = "Correct target hit!", view = None)
-            await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {self.opponent.mention} with a snowball!")
-            change_stats(interaction.guild_id, interaction.user.id, 0)
-            change_stats(interaction.guild_id, self.opponent.id, 2)
+        if snowball_data[interaction.guild_id][self.opponent.id]["snowballs"] > 0:
+            if self.loc == self.target_loc:
+                snowball_data[interaction.guild_id][self.opponent.id]["lastHit"] = int(str(time.time()).split(".")[0])
+                snowball_data[interaction.guild_id][self.opponent.id]["snowballs"] = 0
+                snowball_data[interaction.guild_id][self.opponent.id]["lastLoad"] = None
+                snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
+                await interaction.response.edit_message(content = "Correct target hit!", view = None)
+                await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {self.opponent.mention} with a snowball!")
+                change_stats(interaction.guild_id, interaction.user.id, 0)
+                change_stats(interaction.guild_id, self.opponent.id, 2)
+            else:
+                snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
+                await interaction.response.edit_message(content = "Incorrect target hit!", view = None)
+                await interaction.send(f"Close shot! {interaction.user.mention} missed {self.opponent.mention} by a whisker!")
+                change_stats(interaction.guild_id, interaction.user.id, 1)
         else:
-            snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
-            await interaction.response.edit_message(content = "Incorrect target hit!", view = None)
-            await interaction.send(f"Close shot! {interaction.user.mention} missed {self.opponent.mention} by a whisker!")
-            change_stats(interaction.guild_id, interaction.user.id, 1)
+            await interaction.response.edit_message(view = None)
+            await interaction.send("You do not have any snowballs to throw! Load some with </snowball load:1050412204312252486>", ephemeral = True)
 
 @snowball.subcommand(name = "throw", description = "Throw a snowball!")
 async def snowball_throw(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user you want to throw the snowball at", required = True)):
