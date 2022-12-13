@@ -668,7 +668,7 @@ class ShootView(discord.ui.View):
                 snowball_data[interaction.guild_id][self.opponent.id]["lastLoad"] = None
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
                 await interaction.response.edit_message(content = "Correct target hit!", file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"), view = None)
-                await interaction.send(f"Sucess! {interaction.user.mention} has managed to hit {self.opponent.mention} with a snowball!")
+                await interaction.send(f"Success! {interaction.user.mention} has managed to hit {self.opponent.mention} with a snowball!")
                 change_stats(interaction.guild_id, interaction.user.id, 0)
                 change_stats(interaction.guild_id, self.opponent.id, 2)
             else:
