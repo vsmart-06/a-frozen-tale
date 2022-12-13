@@ -408,12 +408,12 @@ class BuildView(discord.ui.View):
         view.add_item(ColourView())
         await interaction.send(view = view, ephemeral = True)
 
-    @discord.ui.button(label = "Favourite", style = discord.ButtonStyle.blurple, emoji = "🌟")
+    @discord.ui.button(label = "Favourite", style = discord.ButtonStyle.red, emoji = "🌟")
     async def favourite(self, button: discord.ui.Button, interaction: discord.Interaction):
         save_snowman(interaction.user.id, self.modal_structure.getValues())
         await interaction.response.edit_message(content = "**Snowman saved!**", view = None)
 
-    @discord.ui.button(label = "Done", style = discord.ButtonStyle.blurple, emoji = "✅")
+    @discord.ui.button(label = "Done", style = discord.ButtonStyle.green, emoji = "✅")
     async def done(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(view = None)
 
@@ -658,7 +658,7 @@ class ShootView(discord.ui.View):
         createShooter(interaction.guild_id, interaction.user.id, self.loc, True, self.target_loc)
         await interaction.response.edit_message(file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"))
     
-    @discord.ui.button(label = "Shoot", style = discord.ButtonStyle.blurple, emoji = "💥")
+    @discord.ui.button(label = "Shoot", style = discord.ButtonStyle.red, emoji = "💥")
     async def shoot(self, button: discord.ui.Button, interaction: discord.Interaction):
         if snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] > 0:
             createShooter(interaction.guild_id, interaction.user.id, self.loc, False, self.target_loc)
