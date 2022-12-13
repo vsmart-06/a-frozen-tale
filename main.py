@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import time
 import random as rd
+import requests
 from records import save_snowman, get_snowman, change_stats, get_stats, get_leaderboard
 import dotenv
 import os
@@ -768,9 +769,217 @@ async def snowball_profile(interaction: discord.Interaction, user: discord.Membe
         user_embed.description = f"{user.mention} has no snowball statistics yet!"
     await interaction.send(embed = user_embed)
 
-class HelpView(discord.ui.View):
-    def __init__(self):
+class QuestView(discord.ui.View):
+    def __init__(self, user: discord.User):
         super().__init__(timeout = None)
+        self.pos = 0
+        self.user = user
+    
+    @discord.ui.button(label = "Move", style = discord.ButtonStyle.blurple, emoji = "🚶‍♂️")
+    async def move(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user == self.user:
+            await interaction.send("This is not for you!", ephemeral = True)
+            return
+        if self.pos in [0, 1]:
+            difficulty = "easy"
+        elif self.pos in [2, 3]:
+            difficulty = "medium"
+        else:
+            difficulty = "hard"
+        question_data = requests.get(f"https://the-trivia-api.com/api/questions?limit=1&difficulty={difficulty}").json()[0]
+        question = question_data["question"]
+        options = question_data["incorrectAnswers"]
+        options.append(question_data["correctAnswer"])
+        rd.shuffle(options)
+        question_embed = discord.Embed(title = "Trivia!", description = f"*Difficulty*: **{question_data['difficulty'].capitalize()}**", colour = discord.Colour.blue())
+        question_embed.add_field(name = "Question", value = f"**{question}**", inline = False)
+        question_embed.add_field(name = "Options", value = f'''1️⃣ *{str(options[0]).capitalize()}*
+2️⃣ *{str(options[1]).capitalize()}*
+3️⃣ *{str(options[2]).capitalize()}*
+4️⃣ *{str(options[3]).capitalize()}*
+''', inline = False)
+        await interaction.response.edit_message(embed = question_embed, view = QuizView(options.index(question_data["correctAnswer"])+1, question_data["correctAnswer"], self.user, self))
+
+class QuizView(discord.ui.View):
+    def __init__(self, answer: int, correct: str, user: discord.User, view_orig: QuestView):
+        super().__init__(timeout = None)
+        self.answer = answer
+        self.correct = correct
+        self.user = user
+        self.view_orig = view_orig
+        self.castle = "⬛⬛🏰⬛⬛"
+        self.normal = "⬛⬛⬜⬛⬛"
+        self.people = "⬛⬛🧑‍🤝‍🧑⬛⬛"
+        self.dead = "⬛⬛❌⬛⬛"
+        self.complete = "⬛⬛🟨⬛⬛"
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "1️⃣")
+    async def one(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user == self.user:
+            await interaction.send("This is not for you!", ephemeral = True)
+            return
+        if self.answer == 1:
+            self.view_orig.pos += 1
+            if self.view_orig.pos != 5:
+                journey = f"{self.castle}\n"
+                done = False
+                for x in range(5):
+                    if 5-x-1 == self.view_orig.pos:
+                        journey += f"{self.people}\n"
+                        done = True
+                    elif done:
+                        journey += f"{self.complete}\n"
+                    else:
+                        journey += f"{self.normal}\n"
+
+                await interaction.response.edit_message(content = "Correct answer!\n"+journey, embed = None, view = self.view_orig)
+            else:
+                journey = f"{self.people}\n"
+                for x in range(5):
+                    journey += f"{self.complete}\n"
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+        else:
+            journey = f"{self.castle}\n"
+            done = False
+            for x in range(5):
+                if 5-x-1 == self.view_orig.pos:
+                    journey += f"{self.people}\n"
+                    done = True
+                elif done:
+                    journey += f"{self.complete}\n"
+                else:
+                    journey += f"{self.dead}\n"
+            await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "2️⃣")
+    async def two(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user == self.user:
+            await interaction.send("This is not for you!", ephemeral = True)
+            return
+        if self.answer == 2:
+            self.view_orig.pos += 1
+            if self.view_orig.pos != 5:
+                journey = f"{self.castle}\n"
+                done = False
+                for x in range(5):
+                    if 5-x-1 == self.view_orig.pos:
+                        journey += f"{self.people}\n"
+                        done = True
+                    elif done:
+                        journey += f"{self.complete}\n"
+                    else:
+                        journey += f"{self.normal}\n"
+
+                await interaction.response.edit_message(content = "Correct answer!\n"+journey, embed = None, view = self.view_orig)
+            else:
+                journey = f"{self.people}\n"
+                for x in range(5):
+                    journey += f"{self.complete}\n"
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+        else:
+            journey = f"{self.castle}\n"
+            done = False
+            for x in range(5):
+                if 5-x-1 == self.view_orig.pos:
+                    journey += f"{self.people}\n"
+                    done = True
+                elif done:
+                    journey += f"{self.complete}\n"
+                else:
+                    journey += f"{self.dead}\n"
+            await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "3️⃣")
+    async def three(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user == self.user:
+            await interaction.send("This is not for you!", ephemeral = True)
+            return
+        if self.answer == 3:
+            self.view_orig.pos += 1
+            if self.view_orig.pos != 5:
+                journey = f"{self.castle}\n"
+                done = False
+                for x in range(5):
+                    if 5-x-1 == self.view_orig.pos:
+                        journey += f"{self.people}\n"
+                        done = True
+                    elif done:
+                        journey += f"{self.complete}\n"
+                    else:
+                        journey += f"{self.normal}\n"
+
+                await interaction.response.edit_message(content = "Correct answer!\n"+journey, embed = None, view = self.view_orig)
+            else:
+                journey = f"{self.people}\n"
+                for x in range(5):
+                    journey += f"{self.complete}\n"
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+        else:
+            journey = f"{self.castle}\n"
+            done = False
+            for x in range(5):
+                if 5-x-1 == self.view_orig.pos:
+                    journey += f"{self.people}\n"
+                    done = True
+                elif done:
+                    journey += f"{self.complete}\n"
+                else:
+                    journey += f"{self.dead}\n"
+            await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "4️⃣")
+    async def four(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user == self.user:
+            await interaction.send("This is not for you!", ephemeral = True)
+            return
+        if self.answer == 4:
+            self.view_orig.pos += 1
+            if self.view_orig.pos != 5:
+                journey = f"{self.castle}\n"
+                done = False
+                for x in range(5):
+                    if 5-x-1 == self.view_orig.pos:
+                        journey += f"{self.people}\n"
+                        done = True
+                    elif done:
+                        journey += f"{self.complete}\n"
+                    else:
+                        journey += f"{self.normal}\n"
+
+                await interaction.response.edit_message(content = "Correct answer!\n"+journey, embed = None, view = self.view_orig)
+            else:
+                journey = f"{self.people}\n"
+                for x in range(5):
+                    journey += f"{self.complete}\n"
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+        else:
+            journey = f"{self.castle}\n"
+            done = False
+            for x in range(5):
+                if 5-x-1 == self.view_orig.pos:
+                    journey += f"{self.people}\n"
+                    done = True
+                elif done:
+                    journey += f"{self.complete}\n"
+                else:
+                    journey += f"{self.dead}\n"
+            await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+
+@bot.slash_command(name = "quest", description = "Begin your quest!")
+async def quest(interaction: discord.Interaction):
+    journey = '''⬛⬛🏰⬛⬛
+⬛⬛⬜⬛⬛
+⬛⬛⬜⬛⬛
+⬛⬛⬜⬛⬛
+⬛⬛⬜⬛⬛
+⬛⬛🧑‍🤝‍🧑⬛⬛ 
+'''
+    await interaction.send(journey, view = QuestView(interaction.user))
+
+class HelpView(discord.ui.View):
+    def __init__(self, user: discord.User):
+        super().__init__(timeout = None)
+        self.user = user
         self.page = 1
         self.helps = [None, None, None]
         self.helps[0] = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality! Let's begin!", colour = discord.Colour.blue())
@@ -779,12 +988,15 @@ class HelpView(discord.ui.View):
         self.helps[1].add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1050412207504101458>!", inline = False)
         self.helps[1].add_field(name = "Come on let's go and play!", value = "At the same time, Elsa also sadly refused to play with Anna, but you can still play with your friends! Use the commands </snowball load:1050412204312252486> and </snowball throw:1050412204312252486> to have a snowball fight with your friends in your server! Use the command </snowball leaderboard:1050412204312252486> to view your server leaderboard in the game! You can also view your own statistics with the command </snowball profile:1050412204312252486>!\n\nA few points to remember:\n- You can only load a maximum of 2 snowballs at a time\n- You have to wait for 30 seconds between loading snowballs\n- When you get hit by a snowball, you lose all your current snowballs and you have to wait for 30 seconds till you can load another one", inline = False)
         self.helps[1].set_footer(text = "Help page 2/3")
-        self.helps[2] = discord.Embed(title = "Overview", description = "After Elsa's powers are revealed to everyone in Arendelle, Anna resolves to go on a mission to retrieve her sister. During the course of this journey, Anna, accompanied by Olaf, Kristoff, and Sven, faced many difficulties to reach her Elsa's castle.\n\nTo replicate the hardships of this journey, you will be tasked with answering a series of questions to reach the castle and get Elsa back to Arendelle! Use the command </quest:0> to begin your journey!", colour = discord.Colour.blue())
+        self.helps[2] = discord.Embed(title = "Overview", description = "After Elsa's powers are revealed to everyone in Arendelle, Anna resolves to go on a mission to retrieve her sister. During the course of this journey, Anna, accompanied by Olaf, Kristoff, and Sven, faced many difficulties to reach her Elsa's castle.\n\nTo replicate the hardships of this journey, you will be tasked with answering a series of questions to reach the castle and get Elsa back to Arendelle! Use the command </quest:1052249937116659793> to begin your journey!", colour = discord.Colour.blue())
         self.helps[2].set_footer(text = "Help page 3/3")
         
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "◀")
     async def left(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user == self.user:
+            await interaction.send("This is not for you!", ephemeral = True)
+            return
         self.page -= 1
         if self.page == 0:
             self.page = 3
@@ -792,6 +1004,9 @@ class HelpView(discord.ui.View):
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "▶")
     async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user == self.user:
+            await interaction.send("This is not for you!", ephemeral = True)
+            return
         self.page += 1
         if self.page == 4:
             self.page = 1
@@ -800,6 +1015,6 @@ class HelpView(discord.ui.View):
 @bot.slash_command(name = "help", description = "View the bot's help page")
 async def help(interaction: discord.Interaction):
     help_embed = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!", colour = discord.Colour.blue())
-    await interaction.send(embed = help_embed, view = HelpView())  
+    await interaction.send(embed = help_embed, view = HelpView(interaction.user))  
 
 bot.run(token)
