@@ -24,15 +24,11 @@ async def on_ready():
 async def on_guild_join(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send(f"New server: {guild}")
-    new_server = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!
-
-At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. As a tribute to the song, this bot has been developed using its first two lines as a reference. Here are the commands of the bot:''', colour = discord.Colour.blue())
-    new_server.add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1050412207504101458>!", inline = False)
-    new_server.add_field(name = "Come on let's go and play!", value = "At the same time, Elsa also sadly refused to play with Anna, but you can still play with your friends! Use the commands </snowball load:1050412204312252486> and </snowball throw:1050412204312252486> to have a snowball fight with your friends in your server! Use the command </snowball leaderboard:1050412204312252486> to view your server leaderboard in the game! You can also view your own statistics with the command </snowball profile:1050412204312252486>!", inline = False)
+    new_server = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!", colour = discord.Colour.blue())
     channel = guild.system_channel
     if channel != None:
         try:
-            await channel.send(embed = new_server)
+            await channel.send(embed = new_server, view = HelpView())
         except discord.errors.Forbidden:
             pass
 
@@ -772,13 +768,38 @@ async def snowball_profile(interaction: discord.Interaction, user: discord.Membe
         user_embed.description = f"{user.mention} has no snowball statistics yet!"
     await interaction.send(embed = user_embed)
 
+class HelpView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout = None)
+        self.page = 1
+        self.helps = [None, None, None]
+        self.helps[0] = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality! Let's begin!", colour = discord.Colour.blue())
+        self.helps[0].set_footer(text = "Help page 1/3")
+        self.helps[1] = discord.Embed(title = "Overview", description = "At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. Let's try to fulfill Anna's dream ourselves, even though she could not!", colour = discord.Colour.blue())
+        self.helps[1].add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1050412207504101458>!", inline = False)
+        self.helps[1].add_field(name = "Come on let's go and play!", value = "At the same time, Elsa also sadly refused to play with Anna, but you can still play with your friends! Use the commands </snowball load:1050412204312252486> and </snowball throw:1050412204312252486> to have a snowball fight with your friends in your server! Use the command </snowball leaderboard:1050412204312252486> to view your server leaderboard in the game! You can also view your own statistics with the command </snowball profile:1050412204312252486>!\n\nA few points to remember:\n- You can only load a maximum of 2 snowballs at a time\n- You have to wait for 30 seconds between loading snowballs\n- When you get hit by a snowball, you lose all your current snowballs and you have to wait for 30 seconds till you can load another one", inline = False)
+        self.helps[1].set_footer(text = "Help page 2/3")
+        self.helps[2] = discord.Embed(title = "Overview", description = "After Elsa's powers are revealed to everyone in Arendelle, Anna resolves to go on a mission to retrieve her sister. During the course of this journey, Anna, accompanied by Olaf, Kristoff, and Sven, faced many difficulties to reach her Elsa's castle.\n\nTo replicate the hardships of this journey, you will be tasked with answering a series of questions to reach the castle and get Elsa back to Arendelle! Use the command </quest:0> to begin your journey!", colour = discord.Colour.blue())
+        self.helps[2].set_footer(text = "Help page 3/3")
+        
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "◀")
+    async def left(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.page -= 1
+        if self.page == 0:
+            self.page = 3
+        await interaction.response.edit_message(embed = self.helps[self.page-1])
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "▶")
+    async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.page += 1
+        if self.page == 4:
+            self.page = 1
+        await interaction.response.edit_message(embed = self.helps[self.page-1])
+
 @bot.slash_command(name = "help", description = "View the bot's help page")
 async def help(interaction: discord.Interaction):
-    help_embed = discord.Embed(title = "Overview", description = '''Hey there! Here is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!
-
-At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. As a tribute to the song, this bot has been developed using its first two lines as a reference. Here are the commands of the bot:''', colour = discord.Colour.blue())
-    help_embed.add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1050412207504101458> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1050412207504101458>!", inline = False)
-    help_embed.add_field(name = "Come on let's go and play!", value = "At the same time, Elsa also sadly refused to play with Anna, but you can still play with your friends! Use the commands </snowball load:1050412204312252486> and </snowball throw:1050412204312252486> to have a snowball fight with your friends in your server! Use the command </snowball leaderboard:1050412204312252486> to view your server leaderboard in the game! You can also view your own statistics with the command </snowball profile:1050412204312252486>!", inline = False)
-    await interaction.send(embed = help_embed)  
+    help_embed = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!", colour = discord.Colour.blue())
+    await interaction.send(embed = help_embed, view = HelpView())  
 
 bot.run(token)
