@@ -26,7 +26,7 @@ async def on_guild_join(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send(f"New server: {guild}")
     new_server = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!", colour = discord.Colour.blue())
-    new_server.set_footer(text = "Help page 1/1")
+    new_server.set_footer(text = "Help page 1/3")
     channel = guild.system_channel
     if channel != None:
         try:
@@ -1047,7 +1047,7 @@ class HelpView(discord.ui.View):
 @bot.slash_command(name = "help", description = "View the bot's help page")
 async def help(interaction: discord.Interaction):
     help_embed = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!", colour = discord.Colour.blue())
-    help_embed.set_footer(text = "Help page 1/1")
+    help_embed.set_footer(text = "Help page 1/3")
     await interaction.send(embed = help_embed, view = HelpView(interaction.user))  
 
 bot.run(token)
