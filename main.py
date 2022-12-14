@@ -19,7 +19,7 @@ snowball_data = {}
 @bot.event
 async def on_ready():
     print("Do you want to build a snowman?")
-    await bot.change_presence(activity = discord.Activity(name = "Frozen 1 & 2", type = discord.ActivityType.watching))
+    await bot.change_presence(activity = discord.Activity(name = "Frozen", type = discord.ActivityType.watching))
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
