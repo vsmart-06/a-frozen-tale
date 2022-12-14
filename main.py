@@ -763,6 +763,7 @@ async def snowball_profile(interaction: discord.Interaction, user: discord.Membe
     else:
         if user.bot:
             await interaction.send("You cannot view the profile of a bot!", ephemeral = True)
+            return
     user_stats = get_stats(interaction.guild.id, user.id)
     user_embed = discord.Embed(title = f"Statistics for {user.name} in {interaction.guild}", colour = discord.Colour.blue())
     if user_stats:
@@ -999,6 +1000,7 @@ async def quest_profile(interaction: discord.Interaction, user: discord.Member =
     else:
         if user.bot:
             await interaction.send("You cannot view the profile of a bot!", ephemeral = True)
+            return
     stats = get_quest(user.id)
     stats_embed = discord.Embed(title = f"Quest statistics for {user.name}", colour = discord.Colour.blue())
     if stats:
