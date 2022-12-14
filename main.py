@@ -842,7 +842,7 @@ class QuizView(discord.ui.View):
                 journey = f"{self.people}\n"
                 for x in range(5):
                     journey += f"{self.complete}\n"
-                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's meet Elsa!\n"+journey, embed = None, view = None)
                 quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
@@ -882,7 +882,7 @@ class QuizView(discord.ui.View):
                 journey = f"{self.people}\n"
                 for x in range(5):
                     journey += f"{self.complete}\n"
-                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's meet Elsa!\n"+journey, embed = None, view = None)
                 quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
@@ -922,7 +922,7 @@ class QuizView(discord.ui.View):
                 journey = f"{self.people}\n"
                 for x in range(5):
                     journey += f"{self.complete}\n"
-                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's meet Elsa!\n"+journey, embed = None, view = None)
                 quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
@@ -962,7 +962,7 @@ class QuizView(discord.ui.View):
                 journey = f"{self.people}\n"
                 for x in range(5):
                     journey += f"{self.complete}\n"
-                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                await interaction.response.edit_message(content = "You have successfully reached the castle! Let's meet Elsa!\n"+journey, embed = None, view = None)
                 quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
