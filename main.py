@@ -991,7 +991,7 @@ async def quest_new(interaction: discord.Interaction):
 ⬛⬛⬜⬛⬛
 ⬛⬛🧑‍🤝‍🧑⬛⬛ 
 '''
-    await interaction.send("Begin your journey to get Elsa!\n"+journey, view = QuestView(interaction.user))
+    await interaction.send("Begin your journey to get to Elsa!\n"+journey, view = QuestView(interaction.user))
 
 @quest.subcommand(name = "profile", description = "View a user's quest statistics")
 async def quest_profile(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who's profile you would like to view", required = False)):
