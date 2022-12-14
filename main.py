@@ -977,7 +977,7 @@ async def quest(interaction: discord.Interaction):
     await interaction.send(journey, view = QuestView(interaction.user))
 
 class HelpView(discord.ui.View):
-    def __init__(self, user: discord.User):
+    def __init__(self, user: discord.User = None):
         super().__init__(timeout = None)
         self.user = user
         self.page = 1
@@ -994,7 +994,7 @@ class HelpView(discord.ui.View):
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "◀")
     async def left(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if not interaction.user == self.user:
+        if self.user and not interaction.user == self.user:
             await interaction.send("This is not for you!", ephemeral = True)
             return
         self.page -= 1
@@ -1004,7 +1004,7 @@ class HelpView(discord.ui.View):
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "▶")
     async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if not interaction.user == self.user:
+        if self.user and not interaction.user == self.user:
             await interaction.send("This is not for you!", ephemeral = True)
             return
         self.page += 1
