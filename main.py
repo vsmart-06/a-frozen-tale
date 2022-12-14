@@ -5,7 +5,7 @@ import numpy as np
 import time
 import random as rd
 import requests
-from records import save_snowman, get_snowman, change_stats, get_stats, get_leaderboard
+from records import save_snowman, get_snowman, change_stats, get_stats, get_leaderboard, quest_update, get_quest
 import dotenv
 import os
 
@@ -759,6 +759,9 @@ async def snowball_leaderboard(interaction: discord.Interaction):
 async def snowball_profile(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who's profile you would like to view", required = False)):
     if not user:
         user = interaction.user
+    else:
+        if user.bot:
+            await interaction.send("You cannot view the profile of a bot!", ephemeral = True)
     user_stats = get_stats(interaction.guild.id, user.id)
     user_embed = discord.Embed(title = f"Statistics for {user.name} in {interaction.guild}", colour = discord.Colour.blue())
     if user_stats:
@@ -838,6 +841,7 @@ class QuizView(discord.ui.View):
                 for x in range(5):
                     journey += f"{self.complete}\n"
                 await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
             done = False
@@ -850,6 +854,7 @@ class QuizView(discord.ui.View):
                 else:
                     journey += f"{self.dead}\n"
             await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+            quest_update(interaction.user.id, False)
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "2️⃣")
     async def two(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -876,6 +881,7 @@ class QuizView(discord.ui.View):
                 for x in range(5):
                     journey += f"{self.complete}\n"
                 await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
             done = False
@@ -888,6 +894,7 @@ class QuizView(discord.ui.View):
                 else:
                     journey += f"{self.dead}\n"
             await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+            quest_update(interaction.user.id, False)
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "3️⃣")
     async def three(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -914,6 +921,7 @@ class QuizView(discord.ui.View):
                 for x in range(5):
                     journey += f"{self.complete}\n"
                 await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
             done = False
@@ -926,6 +934,7 @@ class QuizView(discord.ui.View):
                 else:
                     journey += f"{self.dead}\n"
             await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+            quest_update(interaction.user.id, False)
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "4️⃣")
     async def four(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -952,6 +961,7 @@ class QuizView(discord.ui.View):
                 for x in range(5):
                     journey += f"{self.complete}\n"
                 await interaction.response.edit_message(content = "You have successfully reached the castle! Let's get to Elsa!\n"+journey, embed = None, view = None)
+                quest_update(interaction.user.id, True)
         else:
             journey = f"{self.castle}\n"
             done = False
@@ -964,9 +974,14 @@ class QuizView(discord.ui.View):
                 else:
                     journey += f"{self.dead}\n"
             await interaction.response.edit_message(content = f"Incorrect answer! The correct answer was `{self.correct}`! You failed to reach the castle!\n"+journey, view = None)
+            quest_update(interaction.user.id, False)
 
-@bot.slash_command(name = "quest", description = "Begin your quest!")
+@bot.slash_command(name = "quest", description = "Let's get Elsa!")
 async def quest(interaction: discord.Interaction):
+    pass
+
+@quest.subcommand(name = "new", description = "Begin your quest!")
+async def quest_new(interaction: discord.Interaction):
     journey = '''⬛⬛🏰⬛⬛
 ⬛⬛⬜⬛⬛
 ⬛⬛⬜⬛⬛
@@ -975,6 +990,22 @@ async def quest(interaction: discord.Interaction):
 ⬛⬛🧑‍🤝‍🧑⬛⬛ 
 '''
     await interaction.send(journey, view = QuestView(interaction.user))
+
+@quest.subcommand(name = "profile", description = "View a user's quest statistics")
+async def quest_profile(interaction: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who's profile you would like to view", required = False)):
+    if not user:
+        user = interaction.user
+    else:
+        if user.bot:
+            await interaction.send("You cannot view the profile of a bot!", ephemeral = True)
+    stats = get_quest(user)
+    stats_embed = discord.Embed(title = f"Quest statistics for {user.name}", colour = discord.Colour.blue())
+    if stats:
+        stats_embed.add_field(name = "Wins", value = stats[0])
+        stats_embed.add_field(name = "Losses", value = stats[1])
+    else:
+        stats_embed.description = "The user has not done a quest yet!"
+    await interaction.send(embed = stats_embed)
 
 class HelpView(discord.ui.View):
     def __init__(self, user: discord.User = None):

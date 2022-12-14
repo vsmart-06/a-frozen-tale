@@ -41,6 +41,12 @@ try:
         s_scarf VARCHAR(6) NOT NULL,
         bg_colour VARCHAR(6) NOT NULL
         )''')
+    c.execute('''CREATE TABLE quests (
+        user_id BIGINT NOT NULL PRIMARY KEY,
+        wins BIGINT NOT NULL,
+        losses BIGINT NOT NULL
+    )
+    ''')
     conn.commit()
 
 except db.errors.ProgrammingError:
@@ -143,6 +149,52 @@ def get_leaderboard(guild_id: int):
     except:
         data = None
 
+    c.close()
+    conn.close()
+    return data
+
+def quest_update(user_id: int, win: bool):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    if win:
+        try:
+            c.execute(f"SELECT * FROM quests WHERE user_id = {user_id}")
+            data = list(c.fetchone())[1:]
+            new_wins = data[0] + 1
+            c.execute(f"UPDATE quests SET wins = {new_wins} WHERE user_id = {user_id}")
+        except:
+            c.execute(f"INSERT INTO quests (user_id, wins, losses) VALUES ({user_id}, 1, 0)")
+    else:
+        try:
+            c.execute(f"SELECT * FROM quests WHERE user_id = {user_id}")
+            data = list(c.fetchone())[1:]
+            new_losses = data[1] + 1
+            c.execute(f"UPDATE quests SET losses = {new_losses} WHERE user_id = {user_id}")
+        except:
+            c.execute(f"INSERT INTO quests (user_id, wins, losses) VALUES ({user_id}, 0, 1)")
+    conn.commit()
+    c.close()
+    conn.close()
+
+def get_quest(user_id: int):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    try:
+        c.execute(f"SELECT * FROM quests WHERE user_id = {user_id}")
+        data = list(c.fetchone())[1:]
+    except:
+        data = None
+    conn.commit()
     c.close()
     conn.close()
     return data
