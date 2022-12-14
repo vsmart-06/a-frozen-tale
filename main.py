@@ -998,7 +998,7 @@ async def quest_profile(interaction: discord.Interaction, user: discord.Member =
     else:
         if user.bot:
             await interaction.send("You cannot view the profile of a bot!", ephemeral = True)
-    stats = get_quest(user)
+    stats = get_quest(user.id)
     stats_embed = discord.Embed(title = f"Quest statistics for {user.name}", colour = discord.Colour.blue())
     if stats:
         stats_embed.add_field(name = "Wins", value = stats[0])
