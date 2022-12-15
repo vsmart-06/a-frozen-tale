@@ -1,9 +1,9 @@
 import mysql.connector as db
 import numpy as np
 import os
-import dotenv
+#import dotenv
 
-dotenv.load_dotenv()
+#dotenv.load_dotenv()
 
 h = os.getenv("HOST")
 u = os.getenv("USER")

@@ -1,0 +1,5 @@
+nextcord
+opencv-python
+numpy
+requests
+mysql-connector
