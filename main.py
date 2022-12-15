@@ -1038,7 +1038,7 @@ class SaveElsa(discord.ui.View):
             if self.current_dir == "end":
                 await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
             else:
-                await interaction.response.edit_message(content = f"Correct!\nYou have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
         
         elif int(str(time.time()).split(".")[0]) - self.time_start > 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
@@ -1059,7 +1059,7 @@ class SaveElsa(discord.ui.View):
             if self.current_dir == "end":
                 await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
             else:
-                await interaction.response.edit_message(content = f"Correct!\nYou have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
         
         elif int(str(time.time()).split(".")[0]) - self.time_start > 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
@@ -1080,7 +1080,7 @@ class SaveElsa(discord.ui.View):
             if self.current_dir == "end":
                 await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
             else:
-                await interaction.response.edit_message(content = f"Correct!\nYou have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
 
         elif int(str(time.time()).split(".")[0]) - self.time_start > 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)    
