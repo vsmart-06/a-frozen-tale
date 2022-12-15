@@ -148,7 +148,7 @@ class BuildStructure(discord.ui.Modal):
             await interaction.send("The radii of your snowballs have to be lesser than or equal to the radius of the snowball beneath them!", ephemeral = True)
             return
         
-        if 2*sum([self.bottom_radius_value, self.middle_radius_value, self.top_radius_value]) >= 950:
+        if 2*sum([self.bottom_radius_value, self.middle_radius_value, self.top_radius_value]) > 950:
             await interaction.send("The sum of the diameters of your snowballs cannot exceed 950", ephemeral = True)
             return
         
