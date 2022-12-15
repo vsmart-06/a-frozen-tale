@@ -167,7 +167,7 @@ class BuildStructure(discord.ui.Modal):
             snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
             self.button_view.modal_design.setValues(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value)
             createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.rgb_sec[::-1], self.scarf[::-1], self.scarf_sec[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
-            return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
+            return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
     def getValues(self):
         return [self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, ConvertToHex(self.rgb), ConvertToHex(self.rgb_sec), ConvertToHex(self.scarf), ConvertToHex(self.scarf_sec), ConvertToHex(self.bg)]
@@ -295,7 +295,7 @@ class BuildDesign(discord.ui.Modal):
         snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
         self.button_view.modal_structure.setValues(self.rgb, self.rgb_sec, self.scarf, self.scarf_sec, self.bg)
         createImage(self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, self.rgb[::-1], self.rgb_sec[::-1], self.scarf[::-1], self.scarf_sec[::-1], self.bg[::-1], interaction.guild_id, interaction.user.id)
-        return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
+        return await interaction.response.edit_message(embed = snowman_embed, view = self.button_view, file = discord.File(f"./snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     
     def getValues(self):
         return [self.bottom_radius_value, self.middle_radius_value, self.top_radius_value, self.arm_length_value, self.num_buttons_value, ConvertToHex(self.rgb), ConvertToHex(self.rgb_sec), ConvertToHex(self.scarf), ConvertToHex(self.scarf_sec), ConvertToHex(self.bg)]
@@ -331,7 +331,7 @@ class ColourModal(discord.ui.Modal):
         colour_embed.add_field(name = "Hex code", value = self.colour.value)
         colour_embed.add_field(name = "RGB code", value = self.colour_value)
         colourBox(self.colour_value[::-1], interaction.guild_id, interaction.user.id)
-        await interaction.response.edit_message(embed = colour_embed, file = discord.File(f"./build-a-snowman/colours/{interaction.guild_id}_{interaction.user.id}.png"))
+        await interaction.response.edit_message(embed = colour_embed, file = discord.File(f"./colours/{interaction.guild_id}_{interaction.user.id}.png"))
 
 
 class ColourView(discord.ui.Select):
@@ -380,7 +380,7 @@ class ColourView(discord.ui.Select):
         colour_embed.add_field(name = "Hex code", value = code)
         colour_embed.add_field(name = "RGB code", value = ConvertToRGB(code))
         colourBox(ConvertToRGB(code)[::-1], interaction.guild_id, interaction.user.id)
-        await interaction.response.edit_message(embed = colour_embed, file = discord.File(f"./build-a-snowman/colours/{interaction.guild_id}_{interaction.user.id}.png"))
+        await interaction.response.edit_message(embed = colour_embed, file = discord.File(f"./colours/{interaction.guild_id}_{interaction.user.id}.png"))
         return
 
 class BuildView(discord.ui.View):
@@ -451,7 +451,7 @@ def createImage(bottom_radius: int, middle_radius: int, top_radius: int, arm_len
             cv2.circle(img, (side//2, (side-4*bottom_radius//3) - x*breaks), middle_radius//10, (0, 0, 0), -1)
     elif num_buttons == 1:
         cv2.circle(img, (side//2, side-2*bottom_radius), middle_radius//10, (0, 0, 0), -1)
-    cv2.imwrite(f"./build-a-snowman/snowmen/{guild_id}_{user}.png", img)
+    cv2.imwrite(f"./snowmen/{guild_id}_{user}.png", img)
 
 def ConvertToRGB(colour: str = "000000"):
     if colour == None:
@@ -483,7 +483,7 @@ def ConvertToHex(colour: tuple):
 def colourBox(colour: tuple, guild_id: int, user: int):
     box = np.zeros((512, 1024, 3), np.uint8)
     box[:,:] = colour
-    cv2.imwrite(f"./build-a-snowman/colours/{guild_id}_{user}.png", box)
+    cv2.imwrite(f"./colours/{guild_id}_{user}.png", box)
 
 @bot.slash_command(name = "snowman", description = "Do you want to build a snowman?")
 async def snowman(interaction: discord.Interaction):
@@ -504,7 +504,7 @@ async def snowman_build(interaction: discord.Interaction):
     snowman_embed.add_field(name = "Secondary scarf colour", value = (0, 0, 255))
     snowman_embed.add_field(name = "Background colour", value = (55, 100, 255))
     snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
-    await interaction.send(view = button_view, embed = snowman_embed, file = discord.File("./build-a-snowman/basic_snowman.png"), ephemeral = True)
+    await interaction.send(view = button_view, embed = snowman_embed, file = discord.File("./basic_snowman.png"), ephemeral = True)
 
 @snowman.subcommand(name = "favourite", description = "View your favourite snowman!")
 async def snowman_favourite(interaction: discord.Interaction):
@@ -523,7 +523,7 @@ async def snowman_favourite(interaction: discord.Interaction):
         snowman_embed.add_field(name = "Secondary scarf colour", value = ConvertToRGB(fav_snowman[8]))
         snowman_embed.add_field(name = "Background colour", value = ConvertToRGB(fav_snowman[9]))
         snowman_embed.set_footer(text = "Image dimensions: 1024 x 1024")
-        await interaction.send(embed = snowman_embed, file = discord.File(f"./build-a-snowman/snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
+        await interaction.send(embed = snowman_embed, file = discord.File(f"./snowmen/{interaction.guild_id}_{interaction.user.id}.png"))
     else:
         await interaction.send("You do not have a favourite snowman yet!", ephemeral = True)
 
@@ -626,7 +626,7 @@ def createShooter(guild_id: int, user: int, loc: int = 1, game: bool = True, rea
         cv2.rectangle(img, (5*side//6 + 15, side), (5*side//6 - 15, side-50), (0, 0, 255), -1)
         cv2.rectangle(img, (5*side//6 + 5, side), (5*side//6 - 5, side-40), (0, 216, 255), -1)
         
-    cv2.imwrite(f"./build-a-snowman/shooters/{guild_id}_{user}.png", img)
+    cv2.imwrite(f"./shooters/{guild_id}_{user}.png", img)
 
 class ShootView(discord.ui.View):
     global snowball_data
@@ -643,7 +643,7 @@ class ShootView(discord.ui.View):
         if self.loc < 0:
             self.loc = 2
         createShooter(interaction.guild_id, interaction.user.id, self.loc, True, self.target_loc)
-        await interaction.response.edit_message(file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"))
+        await interaction.response.edit_message(file = discord.File(f"./shooters/{interaction.guild_id}_{interaction.user.id}.png"))
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "▶")
     async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -651,7 +651,7 @@ class ShootView(discord.ui.View):
         if self.loc > 2:
             self.loc = 0
         createShooter(interaction.guild_id, interaction.user.id, self.loc, True, self.target_loc)
-        await interaction.response.edit_message(file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"))
+        await interaction.response.edit_message(file = discord.File(f"./shooters/{interaction.guild_id}_{interaction.user.id}.png"))
     
     @discord.ui.button(label = "Shoot", style = discord.ButtonStyle.red, emoji = "💥")
     async def shoot(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -662,13 +662,13 @@ class ShootView(discord.ui.View):
                 snowball_data[interaction.guild_id][self.opponent.id]["snowballs"] = 0
                 snowball_data[interaction.guild_id][self.opponent.id]["lastLoad"] = None
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
-                await interaction.response.edit_message(content = "Correct target hit!", file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"), view = None)
+                await interaction.response.edit_message(content = "Correct target hit!", file = discord.File(f"./shooters/{interaction.guild_id}_{interaction.user.id}.png"), view = None)
                 await interaction.send(f"Success! {interaction.user.mention} has managed to hit {self.opponent.mention} with a snowball!")
                 change_stats(interaction.guild_id, interaction.user.id, 0)
                 change_stats(interaction.guild_id, self.opponent.id, 2)
             else:
                 snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] -= 1
-                await interaction.response.edit_message(content = "Incorrect target hit!", file = discord.File(f"./build-a-snowman/shooters/{interaction.guild_id}_{interaction.user.id}.png"), view = None)
+                await interaction.response.edit_message(content = "Incorrect target hit!", file = discord.File(f"./shooters/{interaction.guild_id}_{interaction.user.id}.png"), view = None)
                 await interaction.send(f"Close shot! {interaction.user.mention} missed {self.opponent.mention} by a whisker!")
                 change_stats(interaction.guild_id, interaction.user.id, 1)
         else:
@@ -699,10 +699,10 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
         if snowball_data[interaction.guild_id][interaction.user.id]["snowballs"] > 0:
             if not snowball_data[interaction.guild_id][user.id]["lastHit"]:
                 shot = rd.choice(probability)
-                await interaction.send(content = f"Shoot at a target to see if you will hit {user.mention}!", view = ShootView(shot, user), file = discord.File("./build-a-snowman/basic_shooter.png"), ephemeral = True)
+                await interaction.send(content = f"Shoot at a target to see if you will hit {user.mention}!", view = ShootView(shot, user), file = discord.File("./basic_shooter.png"), ephemeral = True)
             else:
                 if int(str(time.time()).split(".")[0]) - snowball_data[interaction.guild_id][user.id]["lastHit"] >= 30:
-                    await interaction.send(content = f"Shoot at a target to see if you will hit {user.mention}!", view = ShootView(shot, user), file = discord.File("./build-a-snowman/basic_shooter.png"), ephemeral = True)
+                    await interaction.send(content = f"Shoot at a target to see if you will hit {user.mention}!", view = ShootView(shot, user), file = discord.File("./basic_shooter.png"), ephemeral = True)
                 else:
                     await interaction.send(f"{user.mention} has recently been hit by a snowball! Try again <t:{snowball_data[interaction.guild_id][user.id]['lastHit']+30}:R>", ephemeral = True)
         else:
@@ -715,7 +715,7 @@ async def snowball_throw(interaction: discord.Interaction, user: discord.Member 
         else:
             snowball_data[interaction.guild_id][user.id] = {"snowballs": 0, "lastLoad": None, "lastHit": None}
             shot = rd.choice(probability)
-            await interaction.send(content = f"Shoot at a target to see if you will hit {user.mention}!", view = ShootView(shot, user), file = discord.File("./build-a-snowman/basic_shooter.png"), ephemeral = True)
+            await interaction.send(content = f"Shoot at a target to see if you will hit {user.mention}!", view = ShootView(shot, user), file = discord.File("./basic_shooter.png"), ephemeral = True)
 
 @snowball.subcommand(name = "leaderboard", description = "View your server's snowball leaderboard!")
 async def snowball_leaderboard(interaction: discord.Interaction):
