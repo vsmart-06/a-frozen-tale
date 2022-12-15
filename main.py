@@ -6,10 +6,7 @@ import time
 import random as rd
 import requests
 from records import save_snowman, get_snowman, change_stats, get_stats, get_leaderboard, quest_update, get_quest
-#import dotenv
 import os
-
-#dotenv.load_dotenv()
 
 bot = commands.Bot()
 token = os.getenv("DISCORD_TOKEN")
