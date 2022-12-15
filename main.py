@@ -1031,18 +1031,21 @@ class SaveElsa(discord.ui.View):
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬅")
     async def left(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if self.current_dir == "left" and int(str(time.time()).split(".")[0]) - self.time_start <= 30:
+        if self.current_loc[1] == 0:
+            await interaction.send("You can't move to the left here!", ephemeral = True)
+            return
+        if self.current_dir == "left" and int(str(time.time()).split(".")[0]) - self.time_start < 30:
             self.grid[self.current_loc[0]][self.current_loc[1]] = True
             self.current_loc[1] -= 1
             self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
             self.grid[self.current_loc[0]][self.current_loc[1]] = "anna"
             if self.current_dir == "end":
-                await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
+                await interaction.response.edit_message(content = "You have successfully saved Elsa in time!\n"+stringGrid(self.grid), view = None)
                 self.value = False
             else:
-                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>!\n"+stringGrid(self.grid))
         
-        elif int(str(time.time()).split(".")[0]) - self.time_start > 30:
+        elif int(str(time.time()).split(".")[0]) - self.time_start >= 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
             self.value = False
 
@@ -1055,18 +1058,18 @@ class SaveElsa(discord.ui.View):
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬆")
     async def up(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if self.current_dir == "up" and int(str(time.time()).split(".")[0]) - self.time_start <= 30:
+        if self.current_dir == "up" and int(str(time.time()).split(".")[0]) - self.time_start < 30:
             self.grid[self.current_loc[0]][self.current_loc[1]] = True
             self.current_loc[0] -= 1
             self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
             self.grid[self.current_loc[0]][self.current_loc[1]] = "anna"
             if self.current_dir == "end":
-                await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
+                await interaction.response.edit_message(content = "You have successfully saved Elsa in time!\n"+stringGrid(self.grid), view = None)
                 self.value = False
             else:
-                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>!\n"+stringGrid(self.grid))
         
-        elif int(str(time.time()).split(".")[0]) - self.time_start > 30:
+        elif int(str(time.time()).split(".")[0]) - self.time_start >= 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
             self.value = False
 
@@ -1079,18 +1082,21 @@ class SaveElsa(discord.ui.View):
 
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "➡")
     async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if self.current_dir == "right" and int(str(time.time()).split(".")[0]) - self.time_start <= 30:
+        if self.current_loc[1] == len(self.grid)-1:
+            await interaction.send("You can't move to the right here!", ephemeral = True)
+            return
+        if self.current_dir == "right" and int(str(time.time()).split(".")[0]) - self.time_start < 30:
             self.grid[self.current_loc[0]][self.current_loc[1]] = True
             self.current_loc[1] += 1
             self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
             self.grid[self.current_loc[0]][self.current_loc[1]] = "anna"
             if self.current_dir == "end":
-                await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
+                await interaction.response.edit_message(content = "You have successfully saved Elsa in time!\n"+stringGrid(self.grid), view = None)
                 self.value = False
             else:
-                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>!\n"+stringGrid(self.grid))
 
-        elif int(str(time.time()).split(".")[0]) - self.time_start > 30:
+        elif int(str(time.time()).split(".")[0]) - self.time_start >= 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
             self.value = False
 
