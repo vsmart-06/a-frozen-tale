@@ -1012,7 +1012,7 @@ async def quest_profile(interaction: discord.Interaction, user: discord.Member =
 
 class SaveElsa(discord.ui.View):
     def __init__(self, grid: list, current_dir: str):
-        super().__init__(timeout = 30.0)
+        super().__init__(timeout = 45.0)
         self.interaction_original: discord.PartialInteractionMessage = None
         self.grid = grid
         self.current_dir = current_dir
@@ -1043,7 +1043,7 @@ class SaveElsa(discord.ui.View):
                 await interaction.response.edit_message(content = "You have successfully saved Elsa in time!\n"+stringGrid(self.grid), view = None)
                 self.value = False
             else:
-                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>!\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+45}:R>!\n"+stringGrid(self.grid))
         
         elif int(str(time.time()).split(".")[0]) - self.time_start >= 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
@@ -1067,7 +1067,7 @@ class SaveElsa(discord.ui.View):
                 await interaction.response.edit_message(content = "You have successfully saved Elsa in time!\n"+stringGrid(self.grid), view = None)
                 self.value = False
             else:
-                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>!\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+45}:R>!\n"+stringGrid(self.grid))
         
         elif int(str(time.time()).split(".")[0]) - self.time_start >= 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
@@ -1094,7 +1094,7 @@ class SaveElsa(discord.ui.View):
                 await interaction.response.edit_message(content = "You have successfully saved Elsa in time!\n"+stringGrid(self.grid), view = None)
                 self.value = False
             else:
-                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+30}:R>!\n"+stringGrid(self.grid))
+                await interaction.response.edit_message(content = f"You have to save Elsa <t:{self.time_start+45}:R>!\n"+stringGrid(self.grid))
 
         elif int(str(time.time()).split(".")[0]) - self.time_start >= 30:
             await interaction.response.edit_message(content = "You were too slow and could not save Elsa in time! Hans is now the king of Arendelle!\n"+stringGrid(self.grid), view = None)
@@ -1188,7 +1188,7 @@ async def elsa(interaction: discord.Interaction):
     grid, start_dir = createGrid()
     grid_string = stringGrid(grid)
     save_elsa = SaveElsa(grid, start_dir)
-    msg = await interaction.send(f"Follow the arrows on the path to save Elsa from Hans!\nYou have to save Elsa <t:{int(str(time.time()).split('.')[0])+30}:R>\n"+grid_string, view = save_elsa)
+    msg = await interaction.send(f"Follow the arrows on the path to save Elsa from Hans!\nYou have to save Elsa <t:{int(str(time.time()).split('.')[0])+45}:R>\n"+grid_string, view = save_elsa)
     save_elsa.interaction_original = msg
 
 class HelpView(discord.ui.View):
@@ -1200,12 +1200,12 @@ class HelpView(discord.ui.View):
         self.helps[0] = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality! Let's begin!", colour = discord.Colour.blue())
         self.helps[0].set_footer(text = "Help page 1/4")
         self.helps[1] = discord.Embed(title = "Overview", description = "At the beginning of the movie Frozen, Anna asked Elsa to play with her through the iconic **Do you want to build a snowman?** song. Let's try to fulfill Anna's dream ourselves, even though she could not!", colour = discord.Colour.blue())
-        self.helps[1].add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1052915529532330005> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1052915529532330005>!", inline = False)
+        self.helps[1].add_field(name = "Do you want to build a snowman?", value = "Although Anna didn't get to build a snowman with Elsa (apart from Olaf), what's stopping you? Use the command </snowman build:1052915529532330005> to build your own snowman! Preserve your snowman by clicking the **Favourite** button so that you can call it whenever you want with the command </snowman favourite:1052915529532330005>!\n\n**Note**: All details of the snowman can be edited individually or in a group without affecting the others", inline = False)
         self.helps[1].add_field(name = "Come on let's go and play!", value = "At the same time, Elsa also sadly refused to play with Anna, but you can still play with your friends! Use the commands </snowball load:1052915532417998898> and </snowball throw:1052915532417998898> to have a snowball fight with your friends in your server! Use the command </snowball leaderboard:1052915532417998898> to view your server leaderboard in the game! You can also view your own statistics with the command </snowball profile:1052915532417998898>!\n\nA few points to remember:\n- You can only load a maximum of 2 snowballs at a time\n- You have to wait for 30 seconds between loading snowballs\n- When you get hit by a snowball, you lose all your current snowballs and you have to wait for 30 seconds till you can load another one", inline = False)
         self.helps[1].set_footer(text = "Help page 2/4")
         self.helps[2] = discord.Embed(title = "Overview", description = "After Elsa's powers are revealed to everyone in Arendelle, Anna resolves to go on a mission to retrieve her sister. During the course of this journey, Anna, accompanied by Olaf, Kristoff, and Sven, faced many difficulties to reach her Elsa's castle.\n\nTo replicate the hardships of this journey, you will be tasked with answering a series of questions to defrost the path and reach the castle, and get Elsa back to Arendelle! Use the command </quest new:1052915525702930523> to begin your journey! View your quest statistics with the command </quest profile:1052915525702930523>!", colour = discord.Colour.blue())
         self.helps[2].set_footer(text = "Help page 3/4")
-        self.helps[3] = discord.Embed(title = "Overview", description = "Once Anna reaches Elsa's palace, she attempts to convince Elsa to return to Arendelle. This was to no avail, as Elsa refused to return. In the argument that ensued, Elsa accidentally freezes Anna's heart, but then forces Anna, Kristoff, Olaf, and Sven to leave. As the movie carries on, we eventually land back in Arendelle, where Elsa and Hans are having an intense battle, and Hans lies to Elsa telling that she had killed Anna. This leaves Elsa devastated, and Hans raises his sword to kill her. However, Anna manages to run in and stop Hans's blade as she turns to ice. Elsa then starts crying and hugging Anna, and this act of true love manages to bring Anna back to life, and she manages to reel her powers in, and return Arendelle to normality.\n\nTo complete your frozen journey, you must now go on a path created to replicate Anna's journey to save Elsa. You must traverse the path within 30 seconds, otherwise you will be too late to save Elsa from Hans! Follow the arrows exactly to reach Elsa and Hans. Use the command </save elsa:1052915534150250636> to begin! The clock is ticking!", colour = discord.Colour.blue())
+        self.helps[3] = discord.Embed(title = "Overview", description = "Once Anna reaches Elsa's palace, she attempts to convince Elsa to return to Arendelle. This was to no avail, as Elsa refused to return. In the argument that ensued, Elsa accidentally freezes Anna's heart, but then forces Anna, Kristoff, Olaf, and Sven to leave. As the movie carries on, we eventually land back in Arendelle, where Elsa and Hans are having an intense battle, and Hans lies to Elsa telling that she had killed Anna. This leaves Elsa devastated, and Hans raises his sword to kill her. However, Anna manages to run in and stop Hans's blade as she turns to ice. Elsa then starts crying and hugging Anna, and this act of true love manages to bring Anna back to life, and she manages to reel her powers in, and return Arendelle to normality.\n\nTo complete your frozen journey, you must now go on a path created to replicate Anna's journey to save Elsa. You must traverse the path within 45 seconds, otherwise you will be too late to save Elsa from Hans! Follow the arrows exactly to reach the two of them. Use the command </save elsa:1052915534150250636> to begin! The clock is ticking!", colour = discord.Colour.blue())
         self.helps[3].set_footer(text = "Help page 4/4")
         
     
