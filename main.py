@@ -1010,6 +1010,150 @@ async def quest_profile(interaction: discord.Interaction, user: discord.Member =
         stats_embed.description = "The user has not done a quest yet!"
     await interaction.send(embed = stats_embed)
 
+class SaveElsa(discord.ui.View):
+    def __init__(self, grid: list, current_dir: str):
+        super().__init__(timeout = None)
+        self.grid = grid
+        self.current_dir = current_dir
+        self.current_loc = [None, None]
+        for x in range(len(self.grid)):
+            t = False
+            for y in range(len(self.grid)):
+                if self.grid[x][y] == "anna":
+                    self.current_loc = [x, y]
+                    t = True
+                    break
+            if t:
+                break
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬅")
+    async def left(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if self.current_dir == "left":
+            self.grid[self.current_loc[0]][self.current_loc[1]] = True
+            self.current_loc[1] -= 1
+            self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
+            self.grid[self.current_loc[0]][self.current_loc[1]] = "anna"
+            if self.current_dir == "end":
+                await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
+            else:
+                await interaction.response.edit_message(content = "Correct!\n"+stringGrid(self.grid))
+        else:
+            self.current_loc[1] -= 1
+            self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
+            self.grid[self.current_loc[0]][self.current_loc[1]] = False
+            await interaction.response.edit_message(content = "You moved in the wrong direction! You failed to save Elsa!\n"+stringGrid(self.grid), view = None)
+    
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬆")
+    async def up(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if self.current_dir == "up":
+            self.grid[self.current_loc[0]][self.current_loc[1]] = True
+            self.current_loc[0] -= 1
+            self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
+            self.grid[self.current_loc[0]][self.current_loc[1]] = "anna"
+            if self.current_dir == "end":
+                await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
+            else:
+                await interaction.response.edit_message(content = "Correct!\n"+stringGrid(self.grid))
+        else:
+            self.current_loc[0] -= 1
+            self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
+            self.grid[self.current_loc[0]][self.current_loc[1]] = False
+            await interaction.response.edit_message(content = "You moved in the wrong direction! You failed to save Elsa!\n"+stringGrid(self.grid), view = None)
+
+    @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "➡")
+    async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if self.current_dir == "right":
+            self.grid[self.current_loc[0]][self.current_loc[1]] = True
+            self.current_loc[1] += 1
+            self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
+            self.grid[self.current_loc[0]][self.current_loc[1]] = "anna"
+            if self.current_dir == "end":
+                await interaction.response.edit_message(content = "You have successfully reached Elsa!\n"+stringGrid(self.grid), view = None)
+            else:
+                await interaction.response.edit_message(content = "Correct!\n"+stringGrid(self.grid))
+        else:
+            self.current_loc[1] += 1
+            self.current_dir = self.grid[self.current_loc[0]][self.current_loc[1]]
+            self.grid[self.current_loc[0]][self.current_loc[1]] = False
+            await interaction.response.edit_message(content = "You moved in the wrong direction! You failed to save Elsa!\n"+stringGrid(self.grid), view = None)
+
+def createGrid():
+    grid = []
+    for x in range(10):
+        grid.append([None, None, None, None, None, None, None, None, None, None])
+    current = [0, rd.randint(0, 9)]
+    grid[current[0]][current[1]] = "anna"
+    dirs = [0, 1, 2]
+    while True:
+        dir = rd.choice(dirs)
+        if dir == 0:
+            if current[1] != 0:
+                current[1] -= 1
+                if not grid[current[0]][current[1]]:
+                    if grid[current[0]][current[1]+1] != "anna":
+                        grid[current[0]][current[1]+1] = "left"
+                    else:
+                        start_dir = "left"
+                else:
+                    current[1] += 1
+        elif dir == 1:
+            current[0] += 1
+            if not grid[current[0]][current[1]]:
+                if grid[current[0]-1][current[1]] != "anna":
+                    grid[current[0]-1][current[1]] = "up"
+                else:
+                    start_dir = "up"
+                if current[0] == 9:
+                    grid[current[0]][current[1]] = "end"
+                    break
+            else:
+                current[0] -= 1
+        elif dir == 2:
+            if current[1] != 9:
+                current[1] += 1
+                if not grid[current[0]][current[1]]:
+                    if grid[current[0]][current[1]-1] != "anna":
+                        grid[current[0]][current[1]-1] = "right"
+                    else:
+                        start_dir = "right"
+                else:
+                    current[1] -= 1
+    grid = grid[::-1]
+    return grid, start_dir
+
+def stringGrid(grid: list):
+    grid_string = ""
+    for row in grid:
+        for x in row:
+            if x == None:
+                grid_string += "⬜"
+            elif x == "left":
+                grid_string += "⬅"
+            elif x == "right":
+                grid_string += "➡"
+            elif x == "up":
+                grid_string += "⬆"
+            elif x == "anna":
+                grid_string += "🧍‍♀️"
+            elif x == "end":
+                grid_string += "⚔"
+            elif x == True:
+                grid_string += "🟨"
+            elif x == False:
+                grid_string += "❌"
+        grid_string += "\n"
+    return grid_string
+
+@bot.slash_command(name = "save", description = "Go and save Elsa!")
+async def save(interaction: discord.Interaction):
+    pass
+
+@save.subcommand(name = "elsa", description = "Save Elsa from Hans!")
+async def elsa(interaction: discord.Interaction):
+    grid, start_dir = createGrid()
+    grid_string = stringGrid(grid)
+    await interaction.send("Follow the arrows on the path to save Elsa from Hans!\n"+grid_string, view = SaveElsa(grid, start_dir))
+
 class HelpView(discord.ui.View):
     def __init__(self, user: discord.User = None):
         super().__init__(timeout = None)
