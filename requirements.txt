@@ -1,5 +1,5 @@
 nextcord
 numpy
-opencv-python
+opencv
 requests
 mysql-connector
