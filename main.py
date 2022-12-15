@@ -1033,7 +1033,7 @@ class SaveElsa(discord.ui.View):
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬅")
     async def left(self, button: discord.ui.Button, interaction: discord.Interaction):
         if self.user != interaction.user:
-            await interaction.send("This is not for your!", ephemeral = True)
+            await interaction.send("This is not for you!", ephemeral = True)
             return
         if self.current_loc[1] == 0:
             await interaction.send("You can't move to the left here!", ephemeral = True)
@@ -1063,7 +1063,7 @@ class SaveElsa(discord.ui.View):
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬆")
     async def up(self, button: discord.ui.Button, interaction: discord.Interaction):
         if self.user != interaction.user:
-            await interaction.send("This is not for your!", ephemeral = True)
+            await interaction.send("This is not for you!", ephemeral = True)
             return
         if self.current_dir == "up" and int(str(time.time()).split(".")[0]) - self.time_start < 45:
             self.grid[self.current_loc[0]][self.current_loc[1]] = True
@@ -1090,7 +1090,7 @@ class SaveElsa(discord.ui.View):
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "➡")
     async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
         if self.user != interaction.user:
-            await interaction.send("This is not for your!", ephemeral = True)
+            await interaction.send("This is not for you!", ephemeral = True)
             return
         if self.current_loc[1] == len(self.grid)-1:
             await interaction.send("You can't move to the right here!", ephemeral = True)
