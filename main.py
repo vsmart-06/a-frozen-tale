@@ -1011,11 +1011,12 @@ async def quest_profile(interaction: discord.Interaction, user: discord.Member =
     await interaction.send(embed = stats_embed)
 
 class SaveElsa(discord.ui.View):
-    def __init__(self, grid: list, current_dir: str):
+    def __init__(self, grid: list, current_dir: str, user: discord.User):
         super().__init__(timeout = 45.0)
         self.interaction_original: discord.PartialInteractionMessage = None
         self.grid = grid
         self.current_dir = current_dir
+        self.user = user
         self.value = True
         self.time_start = int(str(time.time()).split(".")[0])
         self.current_loc = [None, None]
@@ -1031,6 +1032,9 @@ class SaveElsa(discord.ui.View):
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬅")
     async def left(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if self.user != interaction.user:
+            await interaction.send("This is not for your!", ephemeral = True)
+            return
         if self.current_loc[1] == 0:
             await interaction.send("You can't move to the left here!", ephemeral = True)
             return
@@ -1058,6 +1062,9 @@ class SaveElsa(discord.ui.View):
     
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "⬆")
     async def up(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if self.user != interaction.user:
+            await interaction.send("This is not for your!", ephemeral = True)
+            return
         if self.current_dir == "up" and int(str(time.time()).split(".")[0]) - self.time_start < 45:
             self.grid[self.current_loc[0]][self.current_loc[1]] = True
             self.current_loc[0] -= 1
@@ -1082,6 +1089,9 @@ class SaveElsa(discord.ui.View):
 
     @discord.ui.button(style = discord.ButtonStyle.blurple, emoji = "➡")
     async def right(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if self.user != interaction.user:
+            await interaction.send("This is not for your!", ephemeral = True)
+            return
         if self.current_loc[1] == len(self.grid)-1:
             await interaction.send("You can't move to the right here!", ephemeral = True)
             return
@@ -1187,7 +1197,7 @@ async def save(interaction: discord.Interaction):
 async def elsa(interaction: discord.Interaction):
     grid, start_dir = createGrid()
     grid_string = stringGrid(grid)
-    save_elsa = SaveElsa(grid, start_dir)
+    save_elsa = SaveElsa(grid, start_dir, interaction.user)
     msg = await interaction.send(f"Follow the arrows on the path to save Elsa from Hans!\nYou have to save Elsa <t:{int(str(time.time()).split('.')[0])+45}:R>\n"+grid_string, view = save_elsa)
     save_elsa.interaction_original = msg
 
