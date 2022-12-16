@@ -1243,6 +1243,12 @@ class HelpView(discord.ui.View):
             self.page = 1
         await interaction.response.edit_message(embed = self.helps[self.page-1])
 
+@bot.slash_command(name = "invite", description = "Fetch the invite link for the bot")
+async def invite(interaction: discord.Interaction):
+    view = discord.ui.View()
+    view.add_item(discord.ui.Button(label = "Invite me!", style = discord.ButtonStyle.url, url = "https://discord.com/api/oauth2/authorize?client_id=1052913789269450772&permissions=274878220352&scope=bot%20applications.commands"))
+    await interaction.send(view = view)
+
 @bot.slash_command(name = "help", description = "View the bot's help page")
 async def help(interaction: discord.Interaction):
     help_embed = discord.Embed(title = "Overview", description = "Hey there!\n\nHere is an overview of the bot submitted by Vishnu#2973 for the SnowCodes bot jam 2022. Get ready to embark on a journey and rediscover your childhood, as we make the movie Frozen a reality!", colour = discord.Colour.blue())
