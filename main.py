@@ -17,6 +17,8 @@ snowball_data = {}
 async def on_ready():
     print("Do you want to build a snowman?")
     await bot.change_presence(activity = discord.Activity(name = "Frozen", type = discord.ActivityType.watching))
+    my_user = await bot.fetch_user(706855396828250153)
+    await my_user.send("Do you want to build a snowman?")
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
@@ -30,6 +32,11 @@ async def on_guild_join(guild: discord.Guild):
             await channel.send(embed = new_server, view = HelpView())
         except discord.errors.Forbidden:
             pass
+
+@bot.event
+async def on_guild_remove(guild: discord.Guild):
+    my_user = await bot.fetch_user(706855396828250153)
+    await my_user.send(f"Removed from: {guild}")
 
 class BuildStructure(discord.ui.Modal):
     def __init__(self, button_view: discord.ui.View, bottom_radius: int = 150, middle_radius: int = 112, top_radius: int = 84, arm_length: int = 125, num_buttons: int = 3, rgb: tuple = (0, 0, 0), rgb_sec: tuple = (255, 0, 0), scarf: tuple = (255, 0, 0), scarf_sec: tuple = (0, 0, 255), bg: tuple = (55, 100, 255)):
